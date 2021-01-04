@@ -22,8 +22,8 @@ public class App {
         };
 
         Shanghai shanghai = new Shanghai();
-        shanghai.printStage(layer2);
-        shanghai.solve(layer2);
+        shanghai.printStage(layer);
+        shanghai.solve(layer);
 
     }
 

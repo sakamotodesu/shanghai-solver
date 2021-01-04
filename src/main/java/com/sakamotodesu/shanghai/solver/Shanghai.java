@@ -72,12 +72,14 @@ public class Shanghai {
             return true;
         }
         // 左チェック
-        // 左上左下だけじゃなくて左もチェック必要
+        if (layer[i][j - 1] != nashi) {
+            return false;
+        }
         if (i == 0) {
             if (layer[i + 1][j - 1] == nashi) {
                 return true;
             }
-        } else if (i == layer.length) {
+        } else if (i == layer.length - 1) {
             if (layer[i - 1][j - 1] == nashi) {
                 return true;
             }
@@ -88,9 +90,12 @@ public class Shanghai {
         }
 
         // 右チェック
+        if (layer[i][j + 1] != nashi) {
+            return false;
+        }
         if (i == 0) {
             return layer[i + 1][j + 1] == nashi;
-        } else if (i == layer.length) {
+        } else if (i == layer.length - 1) {
             return layer[i - 1][j + 1] == nashi;
         } else {
             return layer[i + 1][j + 1] == nashi && layer[i - 1][j + 1] == nashi;
