@@ -29,15 +29,26 @@ public class ShanghaiTest {
             , {nashi, nashi, nashi}
     };
 
+    Pi[][] layer4 = new Pi[][]{{eMan, nashi, nashi}
+            , {nashi, ryanMan, nashi}
+            , {nashi, nashi, sanWan}
+    };
+
     @Test
     public void printStage() {
         Shanghai shanghai = new Shanghai();
+        shanghai.printStage(layer);
+        shanghai.printStage(layer2);
         shanghai.printStage(layer3);
+        shanghai.printStage(layer4);
     }
 
     @Test
-    public void solve() {
+    public void getRemovalList() {
         Shanghai shanghai = new Shanghai();
-        shanghai.solve(layer3);
+        System.out.println(shanghai.getRemovalList(layer));
+        System.out.println(shanghai.getRemovalList(layer));
+        System.out.println(shanghai.getRemovalList(layer3));
+        System.out.println(shanghai.getRemovalList(layer4));
     }
 }

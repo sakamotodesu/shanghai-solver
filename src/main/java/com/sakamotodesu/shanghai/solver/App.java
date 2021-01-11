@@ -23,7 +23,7 @@ public class App {
 
         Shanghai shanghai = new Shanghai();
         shanghai.printStage(layer);
-        shanghai.solve(layer);
+        shanghai.getRemovalList(layer);
 
     }
 

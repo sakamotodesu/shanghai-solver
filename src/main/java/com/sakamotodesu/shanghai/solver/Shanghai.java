@@ -45,9 +45,19 @@ public class Shanghai {
 
 
     // solve stage
+    // 取れる牌を全て調べる
+    // 取る牌を選ぶ
+    // 牌を取る
+    // ゲームクリア判定 -> クリア失敗したらどう次の探索を始める？
+    // 再起的に掘っていけば良さそう。取った牌によって状況変わるしね
 
-    public void solve(Pi[][] layer) {
-        // 取れる牌を探す
+    /**
+     * 取れる牌を調べる
+     *
+     * @param layer 牌のレイアウト
+     * @return 取れる牌のリスト。ペアではない
+     */
+    public List<RemovalPi> getRemovalList(Pi[][] layer) {
         List<RemovalPi> removalPiList = new ArrayList<>();
         for (int i = 0; i < layer.length; i++) {
             Pi[] layoutLine = layer[i];
@@ -58,12 +68,7 @@ public class Shanghai {
                 }
             }
         }
-        System.out.println(removalPiList);
-
-        // 取る牌を選ぶ
-        // pairを探す
-        // 牌を取る
-
+        return removalPiList;
     }
 
     // 自分の左右に牌があるか
