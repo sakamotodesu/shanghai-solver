@@ -1,6 +1,6 @@
 package com.sakamotodesu.shanghai.solver;
 
-public enum Nashi implements Pi {
+public enum Nashi implements PiType {
 
     nashi;
 

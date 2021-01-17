@@ -1,8 +1,12 @@
 package com.sakamotodesu.shanghai.solver;
 
+public interface Pi {
 
-interface Pi {
-    char getName();
+    int getI();
 
-    char getType();
+    int getJ();
+
+    int getK();
+
+    PiType getPiType();
 }

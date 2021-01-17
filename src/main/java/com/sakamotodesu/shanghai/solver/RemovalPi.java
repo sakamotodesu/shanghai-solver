@@ -6,7 +6,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class RemovalPi {
-    private Pi pi;
+    private PiType piType;
     private int i;
     private int j;
 }

@@ -9,13 +9,13 @@ import static com.sakamotodesu.shanghai.solver.Nashi.nashi;
 public class App {
     public static void main(String[] args) {
 
-        Pi[][] layer = new Pi[][]{{eMan, nashi}
+        PiType[][] layer = new PiType[][]{{eMan, nashi}
                 , {nashi, ryanMan}
                 , {eMan, nashi}
                 , {nashi, ryanMan}
         };
 
-        Pi[][] layer2 = new Pi[][]{{eMan, ryanMan, sanWan}
+        PiType[][] layer2 = new PiType[][]{{eMan, ryanMan, sanWan}
                 , {nashi, nashi, nashi}
                 , {eMan, ryanMan, sanWan}
                 , {nashi, nashi, nashi}

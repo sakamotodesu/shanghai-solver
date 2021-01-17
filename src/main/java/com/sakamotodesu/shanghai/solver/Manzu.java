@@ -1,6 +1,6 @@
 package com.sakamotodesu.shanghai.solver;
 
-public enum Manzu implements Pi {
+public enum Manzu implements PiType {
     eMan, ryanMan, sanWan, suWan, uWan, roWan, chiWan, perWan, quWan;
 
     @Override

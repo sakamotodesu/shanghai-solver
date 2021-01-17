@@ -7,19 +7,19 @@ import static com.sakamotodesu.shanghai.solver.Nashi.nashi;
 
 public class ShanghaiTest {
 
-    Pi[][] layer = new Pi[][]{{eMan, nashi}
+    PiType[][] layer = new PiType[][]{{eMan, nashi}
             , {nashi, ryanMan}
             , {eMan, nashi}
             , {nashi, ryanMan}
     };
 
-    Pi[][] layer2 = new Pi[][]{{eMan, ryanMan, sanWan}
+    PiType[][] layer2 = new PiType[][]{{eMan, ryanMan, sanWan}
             , {nashi, nashi, nashi}
             , {eMan, ryanMan, sanWan}
             , {nashi, nashi, nashi}
     };
 
-    Pi[][] layer3 = new Pi[][]{{eMan, ryanMan, sanWan}
+    PiType[][] layer3 = new PiType[][]{{eMan, ryanMan, sanWan}
             , {nashi, nashi, nashi}
             , {eMan, ryanMan, sanWan}
             , {nashi, nashi, nashi}
@@ -29,7 +29,7 @@ public class ShanghaiTest {
             , {nashi, nashi, nashi}
     };
 
-    Pi[][] layer4 = new Pi[][]{{eMan, nashi, nashi}
+    PiType[][] layer4 = new PiType[][]{{eMan, nashi, nashi}
             , {nashi, ryanMan, nashi}
             , {nashi, nashi, sanWan}
     };
