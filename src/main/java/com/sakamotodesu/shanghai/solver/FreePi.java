@@ -14,8 +14,18 @@ public class FreePi implements Pi {
     }
 
     @Override
+    public Pi getUpperLeft() {
+        return null;
+    }
+
+    @Override
     public void setUpperLeft(Pi upperLeft) {
 
+    }
+
+    @Override
+    public Pi getMiddleLeft() {
+        return null;
     }
 
     @Override
@@ -24,8 +34,18 @@ public class FreePi implements Pi {
     }
 
     @Override
+    public Pi getLowerLeft() {
+        return null;
+    }
+
+    @Override
     public void setLowerLeft(Pi lowerRight) {
 
+    }
+
+    @Override
+    public Pi getUpperRight() {
+        return null;
     }
 
     @Override
@@ -34,8 +54,18 @@ public class FreePi implements Pi {
     }
 
     @Override
+    public Pi getMiddleRight() {
+        return null;
+    }
+
+    @Override
     public void setMiddleRight(Pi middleRight) {
 
+    }
+
+    @Override
+    public Pi getLowerRight() {
+        return null;
     }
 
     @Override
@@ -44,8 +74,18 @@ public class FreePi implements Pi {
     }
 
     @Override
+    public Pi getOnUpperLeft() {
+        return null;
+    }
+
+    @Override
     public void setOnUpperLeft(Pi onUpperLeft) {
 
+    }
+
+    @Override
+    public Pi getOnMiddleLeft() {
+        return null;
     }
 
     @Override
@@ -54,8 +94,18 @@ public class FreePi implements Pi {
     }
 
     @Override
+    public Pi getOnLowerLeft() {
+        return null;
+    }
+
+    @Override
     public void setOnLowerLeft(Pi onLowerLeft) {
 
+    }
+
+    @Override
+    public Pi getOnUpper() {
+        return null;
     }
 
     @Override
@@ -64,8 +114,18 @@ public class FreePi implements Pi {
     }
 
     @Override
+    public Pi getOnMiddle() {
+        return null;
+    }
+
+    @Override
     public void setOnMiddle(Pi onMiddle) {
 
+    }
+
+    @Override
+    public Pi getOnLower() {
+        return null;
     }
 
     @Override
@@ -74,13 +134,28 @@ public class FreePi implements Pi {
     }
 
     @Override
-    public void setOnUpperRifgt(Pi onUpperRifgt) {
+    public Pi getOnUpperRight() {
+        return null;
+    }
+
+    @Override
+    public void setOnUpperRight(Pi onUpperRight) {
 
     }
 
     @Override
-    public void setOnMiddlRight(Pi onMiddlRight) {
+    public Pi getOnMiddleRight() {
+        return null;
+    }
 
+    @Override
+    public void setOnMiddleRight(Pi onMiddlRight) {
+
+    }
+
+    @Override
+    public Pi getOnLowerRight() {
+        return null;
     }
 
     @Override
@@ -106,5 +181,20 @@ public class FreePi implements Pi {
     @Override
     public PiType getPiType() {
         return nashi;
+    }
+
+    @Override
+    public boolean isRemoval() {
+        return false;
+    }
+
+    @Override
+    public boolean isFree() {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "FreePi";
     }
 }

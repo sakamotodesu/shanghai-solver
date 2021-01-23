@@ -14,7 +14,7 @@ public class ShanghaiSolver {
     // 　取った順番を記録？
 
 
-    public void validate(List<Pi> piList) throws InvalidLayout {
+    public void validate(List<Pi> piList) throws InvalidLayoutException {
         char[][] layout = new char[16][16];
         for (char[] printLayoutLine : layout) {
             Arrays.fill(printLayoutLine, ' ');
@@ -25,7 +25,7 @@ public class ShanghaiSolver {
                     || layout[pi.getI() + 1][pi.getJ()] != ' '
                     || layout[pi.getI() + 1][pi.getJ()] != ' '
                     || layout[pi.getI() + 1][pi.getJ() + 1] != ' ') {
-                throw new InvalidLayout(pi.toString());
+                throw new InvalidLayoutException(pi.toString());
             }
             layout[pi.getI()][pi.getJ()] = pi.getPiType().getName();
             layout[pi.getI()][pi.getJ() + 1] = pi.getPiType().getName();
@@ -38,19 +38,19 @@ public class ShanghaiSolver {
         for (Pi pi : piList) {
             for (Pi qi : piList) {
                 if (qi.getJ() + 2 == pi.getJ()) {
-                    if (qi.getI() - 1 == pi.getI()) {
+                    if (qi.getI() + 1 == pi.getI()) {
                         pi.setUpperLeft(qi);
                     } else if (qi.getI() == pi.getI()) {
                         pi.setMiddleLeft(qi);
-                    } else if (qi.getI() + 1 == pi.getI()) {
+                    } else if (qi.getI() - 1 == pi.getI()) {
                         pi.setLowerLeft(qi);
                     }
                 } else if (qi.getJ() - 2 == pi.getJ()) {
-                    if (qi.getI() - 1 == pi.getI()) {
+                    if (qi.getI() + 1 == pi.getI()) {
                         pi.setUpperRight(qi);
                     } else if (qi.getI() == pi.getI()) {
                         pi.setMiddleRight(qi);
-                    } else if (qi.getI() + 1 == pi.getI()) {
+                    } else if (qi.getI() - 1 == pi.getI()) {
                         pi.setLowerRight(qi);
                     }
                 }

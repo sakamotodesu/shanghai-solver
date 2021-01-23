@@ -3,27 +3,8 @@
  */
 package com.sakamotodesu.shanghai.solver;
 
-import static com.sakamotodesu.shanghai.solver.Manzu.*;
-import static com.sakamotodesu.shanghai.solver.Nashi.nashi;
-
 public class App {
     public static void main(String[] args) {
-
-        PiType[][] layer = new PiType[][]{{eMan, nashi}
-                , {nashi, ryanMan}
-                , {eMan, nashi}
-                , {nashi, ryanMan}
-        };
-
-        PiType[][] layer2 = new PiType[][]{{eMan, ryanMan, sanWan}
-                , {nashi, nashi, nashi}
-                , {eMan, ryanMan, sanWan}
-                , {nashi, nashi, nashi}
-        };
-
-        Shanghai shanghai = new Shanghai();
-        shanghai.printStage(layer);
-        shanghai.getRemovalList(layer);
 
     }
 
