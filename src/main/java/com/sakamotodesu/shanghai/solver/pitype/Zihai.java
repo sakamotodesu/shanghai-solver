@@ -5,7 +5,27 @@ public enum Zihai implements PiType {
 
     @Override
     public char getName() {
-        return (char) (this.ordinal() + 0x31);
+        switch (this) {
+            case ton:
+                return 'T';
+            case nan:
+                return 'N';
+            case sha:
+                return 'S';
+            case pe:
+                return 'P';
+            case haku:
+                return 'W'; //white
+            case hatsu:
+                return 'H';
+            case chun:
+                return 'C';
+            case ryu:
+                return 'R';
+            case season:
+                return 'Z';
+        }
+        return ' ';
     }
 
     @Override

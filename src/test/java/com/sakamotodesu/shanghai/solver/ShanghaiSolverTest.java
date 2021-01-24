@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.sakamotodesu.shanghai.solver.pitype.Manzu.eMan;
-import static com.sakamotodesu.shanghai.solver.pitype.Manzu.ryanMan;
+import static com.sakamotodesu.shanghai.solver.pitype.Manzu.*;
+import static com.sakamotodesu.shanghai.solver.pitype.Pinzu.ePin;
+import static com.sakamotodesu.shanghai.solver.pitype.Pinzu.ryanPin;
+import static com.sakamotodesu.shanghai.solver.pitype.Souzu.*;
+import static com.sakamotodesu.shanghai.solver.pitype.Zihai.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -24,6 +27,7 @@ public class ShanghaiSolverTest {
     List<Pi> fourPiesImpossible;
     List<Pi> sixPiesOnlyOneWayPossible;
     List<Pi> twoFloor;
+    List<Pi> normal;
 
 
     @Before
@@ -56,6 +60,50 @@ public class ShanghaiSolverTest {
                 new PlacedPi(eMan, 0, 2, 0),
                 new PlacedPi(ryanMan, 0, 0, 1),
                 new PlacedPi(ryanMan, 0, 2, 1)));
+
+        normal = new ArrayList<>(Arrays.asList(new PlacedPi(chiSou, 0, 4, 0),
+                new PlacedPi(eSou, 0, 6, 0),
+                new PlacedPi(chiSou, 0, 12, 0),
+                new PlacedPi(ePin, 0, 14, 0),
+
+                new PlacedPi(season, 2, 2, 0),
+                new PlacedPi(chiSou, 2, 4, 0),
+                new PlacedPi(ryanPin, 2, 6, 0),
+                new PlacedPi(ePin, 2, 8, 0),
+
+                new PlacedPi(suWan, 2, 10, 0),
+                new PlacedPi(suWan, 2, 12, 0),
+                new PlacedPi(ryanPin, 2, 14, 0),
+                new PlacedPi(nan, 2, 16, 0),
+
+                new PlacedPi(ryanPin, 4, 4, 0),
+                new PlacedPi(ePin, 4, 6, 0),
+                new PlacedPi(suWan, 4, 8, 0),
+                new PlacedPi(suWan, 4, 10, 0),
+                new PlacedPi(ePin, 4, 12, 0),
+                new PlacedPi(eSou, 4, 14, 0),
+
+                new PlacedPi(season, 6, 6, 0),
+                new PlacedPi(eSou, 6, 8, 0),
+                new PlacedPi(ryanPin, 6, 10, 0),
+                new PlacedPi(ton, 6, 12, 0),
+                new PlacedPi(ton, 6, 17, 0),
+
+                new PlacedPi(roSou, 7, 15, 0),
+                new PlacedPi(ryanSou, 7, 19, 0),
+
+                new PlacedPi(uWan, 8, 8, 0),
+                new PlacedPi(ryanSou, 8, 10, 0),
+                new PlacedPi(sanSou, 8, 17, 0),
+
+                new PlacedPi(chiSou, 10, 9, 0),
+
+                new PlacedPi(nan, 11, 2, 0),
+
+                new PlacedPi(season, 12, 0, 0),
+                new PlacedPi(sanSou, 12, 4, 0),
+
+                new PlacedPi(sanSou, 13, 2, 0)));
     }
 
     @Test
