@@ -1,4 +1,7 @@
-package com.sakamotodesu.shanghai.solver;
+package com.sakamotodesu.shanghai.solver.pi;
+
+
+import com.sakamotodesu.shanghai.solver.pitype.PiType;
 
 public interface Pi {
 

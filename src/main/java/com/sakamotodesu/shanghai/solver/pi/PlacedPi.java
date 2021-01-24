@@ -1,5 +1,8 @@
-package com.sakamotodesu.shanghai.solver;
+package com.sakamotodesu.shanghai.solver.pi;
 
+import com.sakamotodesu.shanghai.solver.pi.FreePi;
+import com.sakamotodesu.shanghai.solver.pi.Pi;
+import com.sakamotodesu.shanghai.solver.pitype.PiType;
 import lombok.Data;
 
 

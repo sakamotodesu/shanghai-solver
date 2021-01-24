@@ -1,8 +1,8 @@
-package com.sakamotodesu.shanghai.solver;
+package com.sakamotodesu.shanghai.solver.pi;
 
 import org.junit.Test;
 
-import static com.sakamotodesu.shanghai.solver.Manzu.eMan;
+import static com.sakamotodesu.shanghai.solver.pitype.Manzu.eMan;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

@@ -1,4 +1,4 @@
-package com.sakamotodesu.shanghai.solver;
+package com.sakamotodesu.shanghai.solver.pitype;
 
 public enum Nashi implements PiType {
 

@@ -1,6 +1,8 @@
-package com.sakamotodesu.shanghai.solver;
+package com.sakamotodesu.shanghai.solver.pi;
 
-import static com.sakamotodesu.shanghai.solver.Nashi.nashi;
+import com.sakamotodesu.shanghai.solver.pitype.PiType;
+
+import static com.sakamotodesu.shanghai.solver.pitype.Nashi.nashi;
 
 public class FreePi implements Pi {
 

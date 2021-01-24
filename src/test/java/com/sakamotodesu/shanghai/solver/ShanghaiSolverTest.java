@@ -1,5 +1,7 @@
 package com.sakamotodesu.shanghai.solver;
 
+import com.sakamotodesu.shanghai.solver.pi.Pi;
+import com.sakamotodesu.shanghai.solver.pi.PlacedPi;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -7,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.sakamotodesu.shanghai.solver.Manzu.eMan;
-import static com.sakamotodesu.shanghai.solver.Manzu.ryanMan;
+import static com.sakamotodesu.shanghai.solver.pitype.Manzu.eMan;
+import static com.sakamotodesu.shanghai.solver.pitype.Manzu.ryanMan;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -108,8 +110,16 @@ public class ShanghaiSolverTest {
     @Test
     public void solvedTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
-        solver.solve(fourPiesPartialRemoval);
-        solver.solve(fourPiesImpossible);
-        solver.solve(sixPiesOnlyOneWayPossible);
+        List<Pi> solvedList1 = new ArrayList<>();
+        solver.solve(fourPiesPartialRemoval, solvedList1);
+        System.out.println(solvedList1);
+
+        List<Pi> solvedList2 = new ArrayList<>();
+        solver.solve(fourPiesImpossible, solvedList2);
+        System.out.println(solvedList2);
+
+        List<Pi> solvedList3 = new ArrayList<>();
+        solver.solve(sixPiesOnlyOneWayPossible, solvedList3);
+        System.out.println(solvedList3);
     }
 }
