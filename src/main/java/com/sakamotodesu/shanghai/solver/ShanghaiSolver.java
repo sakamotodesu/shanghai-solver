@@ -1,5 +1,6 @@
 package com.sakamotodesu.shanghai.solver;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class ShanghaiSolver {
 
     public void update(List<Pi> piList) {
         for (Pi pi : piList) {
+            pi.init();
             for (Pi qi : piList) {
                 if (qi.getJ() + 2 == pi.getJ()) {
                     if (qi.getI() + 1 == pi.getI()) {
@@ -77,5 +79,49 @@ public class ShanghaiSolver {
             }
             System.out.println();
         }
+    }
+
+    /**
+     * @param piList 問題
+     * @return true:解けた false:詰んだ
+     */
+    public boolean solve(List<Pi> piList) {
+        // さて
+        // 総当たりの実装どうやればいいのか
+        if (piList.size() == 0) {
+            System.out.println("solved.");
+            return true;//解けた
+        }
+        printStage(piList);
+        update(piList);
+        List<Pi> removalList = new ArrayList<>();
+        for (Pi pi : piList) {
+            if (pi.isRemoval()) {
+                removalList.add(pi);
+            }
+        }
+        if (removalList.size() == 0) {
+            System.out.println("unsolved.");
+            return false;//詰んだ
+        }
+
+        for (Pi pi : removalList) {
+            for (Pi qi : removalList) {
+                if (pi.getPiType() == qi.getPiType() && !pi.equals(qi)) {
+                    //取ってまた再帰させる？
+                    //リストから綺麗に取ってアップデートもする
+                    List<Pi> removedList = new ArrayList<>(piList);
+                    removedList.remove(pi);
+                    removedList.remove(qi);
+                    System.out.println("removed:" + pi);
+                    System.out.println("removed:" + qi);
+                    if (solve(removedList)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        System.out.println("unsolved.");
+        return false;
     }
 }

@@ -14,6 +14,11 @@ public class FreePi implements Pi {
     }
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public Pi getUpperLeft() {
         return null;
     }

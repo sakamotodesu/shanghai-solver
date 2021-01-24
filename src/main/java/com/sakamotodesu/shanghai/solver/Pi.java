@@ -2,6 +2,8 @@ package com.sakamotodesu.shanghai.solver;
 
 public interface Pi {
 
+    void init();
+
     Pi getUpperLeft();
 
     void setUpperLeft(Pi upperLeft);

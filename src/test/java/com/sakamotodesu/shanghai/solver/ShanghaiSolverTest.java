@@ -19,6 +19,8 @@ public class ShanghaiSolverTest {
     List<Pi> twoPiesInvalid;
     List<Pi> fourPiesAllRemoval;
     List<Pi> fourPiesPartialRemoval;
+    List<Pi> fourPiesImpossible;
+    List<Pi> sixPiesOnlyOneWayPossible;
 
 
     @Before
@@ -37,30 +39,40 @@ public class ShanghaiSolverTest {
                 new PlacedPi(ryanMan, 0, 2, 0),
                 new PlacedPi(ryanMan, 0, 4, 0),
                 new PlacedPi(eMan, 0, 6, 0)));
+        fourPiesImpossible = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
+                new PlacedPi(ryanMan, 0, 2, 0),
+                new PlacedPi(eMan, 0, 4, 0),
+                new PlacedPi(ryanMan, 0, 6, 0)));
+        sixPiesOnlyOneWayPossible = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
+                new PlacedPi(eMan, 0, 2, 0),
+                new PlacedPi(eMan, 2, 0, 0),
+                new PlacedPi(ryanMan, 2, 2, 0),
+                new PlacedPi(eMan, 2, 4, 0),
+                new PlacedPi(ryanMan, 2, 6, 0)));
     }
 
     @Test
-    public void printStage() {
+    public void printStageTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.printStage(twoPiesMiddleRight);
         solver.printStage(twoPiesLowerRight);
     }
 
     @Test
-    public void validate() throws InvalidLayoutException {
+    public void validateTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(twoPiesMiddleRight);
         solver.validate(twoPiesLowerRight);
     }
 
     @Test(expected = InvalidLayoutException.class)
-    public void throwInvalidException() throws InvalidLayoutException {
+    public void throwInvalidExceptionTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(twoPiesInvalid);
     }
 
     @Test
-    public void update() {
+    public void updateTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.update(twoPiesMiddleRight);
         assertThat(twoPiesMiddleRight.get(0).getMiddleRight().getPiType(), is(eMan));
@@ -86,12 +98,18 @@ public class ShanghaiSolverTest {
     }
 
     @Test
-    public void removal() {
+    public void removalTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.update(fourPiesAllRemoval);
         assertThat(fourPiesAllRemoval.get(0).isRemoval(), is(true));
         solver.update(fourPiesPartialRemoval);
-
     }
 
+    @Test
+    public void solvedTest() {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.solve(fourPiesPartialRemoval);
+        solver.solve(fourPiesImpossible);
+        solver.solve(sixPiesOnlyOneWayPossible);
+    }
 }

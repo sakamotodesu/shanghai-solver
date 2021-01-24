@@ -42,6 +42,25 @@ public class PlacedPi implements Pi {
     }
 
     @Override
+    public void init() {
+        this.upperLeft = FreePi.getInstance();
+        this.middleLeft = FreePi.getInstance();
+        this.lowerLeft = FreePi.getInstance();
+        this.upperRight = FreePi.getInstance();
+        this.middleRight = FreePi.getInstance();
+        this.lowerRight = FreePi.getInstance();
+        this.onUpperLeft = FreePi.getInstance();
+        this.onMiddleLeft = FreePi.getInstance();
+        this.onLowerLeft = FreePi.getInstance();
+        this.onUpper = FreePi.getInstance();
+        this.onMiddle = FreePi.getInstance();
+        this.onLower = FreePi.getInstance();
+        this.onUpperRight = FreePi.getInstance();
+        this.onMiddleRight = FreePi.getInstance();
+        this.onLowerRight = FreePi.getInstance();
+    }
+
+    @Override
     public boolean isRemoval() {
         if (!onUpperLeft.isFree()
                 || !onMiddleLeft.isFree()
