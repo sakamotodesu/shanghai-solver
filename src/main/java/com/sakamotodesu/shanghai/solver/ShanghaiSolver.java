@@ -41,21 +41,49 @@ public class ShanghaiSolver {
         for (Pi pi : piList) {
             pi.init();
             for (Pi qi : piList) {
-                if (qi.getJ() + 2 == pi.getJ()) {
-                    if (qi.getI() + 1 == pi.getI()) {
-                        pi.setUpperLeft(qi);
-                    } else if (qi.getI() == pi.getI()) {
-                        pi.setMiddleLeft(qi);
-                    } else if (qi.getI() - 1 == pi.getI()) {
-                        pi.setLowerLeft(qi);
+                if (pi.getK() == qi.getK()) {
+                    if (pi.getJ() - 2 == qi.getJ()) {
+                        if (pi.getI() - 1 == qi.getI()) {
+                            pi.setUpperLeft(qi);
+                        } else if (pi.getI() == qi.getI()) {
+                            pi.setMiddleLeft(qi);
+                        } else if (pi.getI() + 1 == qi.getI()) {
+                            pi.setLowerLeft(qi);
+                        }
+                    } else if (pi.getJ() + 2 == qi.getJ()) {
+                        if (pi.getI() - 1 == qi.getI()) {
+                            pi.setUpperRight(qi);
+                        } else if (pi.getI() == qi.getI()) {
+                            pi.setMiddleRight(qi);
+                        } else if (pi.getI() + 1 == qi.getI()) {
+                            pi.setLowerRight(qi);
+                        }
                     }
-                } else if (qi.getJ() - 2 == pi.getJ()) {
-                    if (qi.getI() + 1 == pi.getI()) {
-                        pi.setUpperRight(qi);
-                    } else if (qi.getI() == pi.getI()) {
-                        pi.setMiddleRight(qi);
-                    } else if (qi.getI() - 1 == pi.getI()) {
-                        pi.setLowerRight(qi);
+                } else if (pi.getK() + 1 == qi.getK()) {
+                    if (pi.getJ() - 1 == qi.getJ()) {
+                        if (pi.getI() - 1 == qi.getI()) {
+                            pi.setOnUpperLeft(qi);
+                        } else if (pi.getI() == qi.getI()) {
+                            pi.setOnMiddleLeft(qi);
+                        } else if (pi.getI() + 1 == qi.getI()) {
+                            pi.setOnLowerLeft(qi);
+                        }
+                    } else if (pi.getJ() == qi.getJ()) {
+                        if (pi.getI() - 1 == qi.getI()) {
+                            pi.setOnUpper(qi);
+                        } else if (pi.getI() == qi.getI()) {
+                            pi.setOnMiddle(qi);
+                        } else if (pi.getI() + 1 == qi.getI()) {
+                            pi.setOnLower(qi);
+                        }
+                    } else if (pi.getJ() + 1 == qi.getJ()) {
+                        if (pi.getI() - 1 == qi.getI()) {
+                            pi.setOnUpperRight(qi);
+                        } else if (pi.getI() == qi.getI()) {
+                            pi.setOnMiddleRight(qi);
+                        } else if (pi.getI() + 1 == qi.getI()) {
+                            pi.setOnLowerRight(qi);
+                        }
                     }
                 }
             }
@@ -70,10 +98,36 @@ public class ShanghaiSolver {
         }
 
         for (Pi pi : piList) {
-            printLayout[pi.getI()][pi.getJ()] = pi.getPiType().getName();
-            printLayout[pi.getI()][pi.getJ() + 1] = pi.getPiType().getName();
-            printLayout[pi.getI() + 1][pi.getJ()] = pi.getPiType().getType();
-            printLayout[pi.getI() + 1][pi.getJ() + 1] = pi.getPiType().getType();
+            if (pi.getK() == 0) {
+                printLayout[pi.getI()][pi.getJ()] = pi.getPiType().getName();
+                printLayout[pi.getI()][pi.getJ() + 1] = pi.getPiType().getName();
+                printLayout[pi.getI() + 1][pi.getJ()] = pi.getPiType().getType();
+                printLayout[pi.getI() + 1][pi.getJ() + 1] = pi.getPiType().getType();
+            }
+        }
+        for (Pi pi : piList) {
+            if (pi.getK() == 1) {
+                printLayout[pi.getI()][pi.getJ()] = pi.getPiType().getName();
+                printLayout[pi.getI()][pi.getJ() + 1] = pi.getPiType().getName();
+                printLayout[pi.getI() + 1][pi.getJ()] = pi.getPiType().getType();
+                printLayout[pi.getI() + 1][pi.getJ() + 1] = pi.getPiType().getType();
+            }
+        }
+        for (Pi pi : piList) {
+            if (pi.getK() == 2) {
+                printLayout[pi.getI()][pi.getJ()] = pi.getPiType().getName();
+                printLayout[pi.getI()][pi.getJ() + 1] = pi.getPiType().getName();
+                printLayout[pi.getI() + 1][pi.getJ()] = pi.getPiType().getType();
+                printLayout[pi.getI() + 1][pi.getJ() + 1] = pi.getPiType().getType();
+            }
+        }
+        for (Pi pi : piList) {
+            if (pi.getK() == 3) {
+                printLayout[pi.getI()][pi.getJ()] = pi.getPiType().getName();
+                printLayout[pi.getI()][pi.getJ() + 1] = pi.getPiType().getName();
+                printLayout[pi.getI() + 1][pi.getJ()] = pi.getPiType().getType();
+                printLayout[pi.getI() + 1][pi.getJ() + 1] = pi.getPiType().getType();
+            }
         }
         for (char[] printLayoutLine : printLayout) {
             for (char printChar : printLayoutLine) {

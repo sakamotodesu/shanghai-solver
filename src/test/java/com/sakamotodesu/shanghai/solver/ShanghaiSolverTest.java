@@ -23,6 +23,7 @@ public class ShanghaiSolverTest {
     List<Pi> fourPiesPartialRemoval;
     List<Pi> fourPiesImpossible;
     List<Pi> sixPiesOnlyOneWayPossible;
+    List<Pi> twoFloor;
 
 
     @Before
@@ -51,6 +52,10 @@ public class ShanghaiSolverTest {
                 new PlacedPi(ryanMan, 2, 2, 0),
                 new PlacedPi(eMan, 2, 4, 0),
                 new PlacedPi(ryanMan, 2, 6, 0)));
+        twoFloor = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
+                new PlacedPi(eMan, 0, 2, 0),
+                new PlacedPi(ryanMan, 0, 0, 1),
+                new PlacedPi(ryanMan, 0, 2, 1)));
     }
 
     @Test
@@ -58,6 +63,7 @@ public class ShanghaiSolverTest {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.printStage(twoPiesMiddleRight);
         solver.printStage(twoPiesLowerRight);
+        solver.printStage(twoFloor);
     }
 
     @Test
@@ -97,6 +103,10 @@ public class ShanghaiSolverTest {
         assertThat(fourPiesPartialRemoval.get(2).getMiddleLeft().getPiType(), is(ryanMan));
         assertThat(fourPiesPartialRemoval.get(2).getMiddleRight().getPiType(), is(eMan));
         assertThat(fourPiesPartialRemoval.get(3).getMiddleLeft().getPiType(), is(ryanMan));
+
+        solver.update(twoFloor);
+        assertThat(twoFloor.get(0).getOnMiddle().getPiType(), is(ryanMan));
+        assertThat(twoFloor.get(1).getOnMiddle().getPiType(), is(ryanMan));
     }
 
     @Test
@@ -110,16 +120,20 @@ public class ShanghaiSolverTest {
     @Test
     public void solvedTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
-        List<Pi> solvedList1 = new ArrayList<>();
-        solver.solve(fourPiesPartialRemoval, solvedList1);
-        System.out.println(solvedList1);
+        List<Pi> solvedList = new ArrayList<>();
+        solver.solve(fourPiesPartialRemoval, solvedList);
+        System.out.println(solvedList);
 
-        List<Pi> solvedList2 = new ArrayList<>();
-        solver.solve(fourPiesImpossible, solvedList2);
-        System.out.println(solvedList2);
+        solvedList.clear();
+        solver.solve(fourPiesImpossible, solvedList);
+        System.out.println(solvedList);
 
-        List<Pi> solvedList3 = new ArrayList<>();
-        solver.solve(sixPiesOnlyOneWayPossible, solvedList3);
-        System.out.println(solvedList3);
+        solvedList.clear();
+        solver.solve(sixPiesOnlyOneWayPossible, solvedList);
+        System.out.println(solvedList);
+
+        solvedList.clear();
+        solver.solve(twoFloor, solvedList);
+        System.out.println(solvedList);
     }
 }

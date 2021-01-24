@@ -1,7 +1,7 @@
 package com.sakamotodesu.shanghai.solver.pitype;
 
 public enum Zihai implements PiType {
-    ton, nan, sha, pe, haku, hatsu, chun, ryu;
+    ton, nan, sha, pe, haku, hatsu, chun, ryu, season;
 
     @Override
     public char getName() {
