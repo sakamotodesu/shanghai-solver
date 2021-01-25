@@ -70,7 +70,6 @@ public class ShanghaiSolverTest {
                 new PlacedPi(chiSou, 2, 4, 0),
                 new PlacedPi(ryanPin, 2, 6, 0),
                 new PlacedPi(ePin, 2, 8, 0),
-
                 new PlacedPi(suWan, 2, 10, 0),
                 new PlacedPi(suWan, 2, 12, 0),
                 new PlacedPi(ryanPin, 2, 14, 0),
@@ -103,7 +102,30 @@ public class ShanghaiSolverTest {
                 new PlacedPi(season, 12, 0, 0),
                 new PlacedPi(sanSou, 12, 4, 0),
 
-                new PlacedPi(sanSou, 13, 2, 0)));
+                new PlacedPi(sanSou, 13, 2, 0),
+
+                new PlacedPi(ton, 1, 5, 1),
+                new PlacedPi(uWan, 1, 13, 1),
+
+                new PlacedPi(roSou, 2, 3, 1),
+                new PlacedPi(season, 2, 15, 1),
+
+                new PlacedPi(uWan, 3, 5, 1),
+                new PlacedPi(ton, 3, 7, 1),
+                new PlacedPi(eSou, 3, 9, 1),
+                new PlacedPi(sha, 3, 11, 1),
+                new PlacedPi(sanSou, 3, 11, 1),
+
+                new PlacedPi(ryu, 5, 7, 1),
+                new PlacedPi(sha, 5, 9, 1),
+                new PlacedPi(ryu, 5, 11, 1),
+
+                new PlacedPi(roSou, 7, 9, 1),
+                new PlacedPi(uWan, 7, 17, 1),
+
+                new PlacedPi(roSou, 12, 2, 1)
+
+        ));
     }
 
     @Test
@@ -182,6 +204,16 @@ public class ShanghaiSolverTest {
 
         solvedList.clear();
         solver.solve(twoFloor, solvedList);
+        System.out.println(solvedList);
+    }
+
+    @Test
+    public void solvedNormalTest() {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        List<Pi> solvedList = new ArrayList<>();
+        System.out.println(normal.size());
+
+        solver.solve(normal, solvedList);
         System.out.println(solvedList);
     }
 }

@@ -92,7 +92,7 @@ public class ShanghaiSolver {
 
     public void printStage(List<Pi> piList) {
 
-        char[][] printLayout = new char[16][16];
+        char[][] printLayout = new char[16][32];
         for (char[] printLayoutLine : printLayout) {
             Arrays.fill(printLayoutLine, ' ');
         }
