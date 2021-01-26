@@ -1,39 +1,49 @@
 package com.sakamotodesu.shanghai.solver;
 
 import com.sakamotodesu.shanghai.solver.pi.Pi;
+import com.sakamotodesu.shanghai.solver.pitype.PiType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ShanghaiSolver {
 
-    // レイアウトはある状態からスタート
-    // 牌ごとに自分をブロックしてるやつを把握する
-    // ここから探索スタート
-    // 牌ごとに取れるか計算する
-    //   取れる牌がなければ別ルート
-    // 牌を選択して取る
-    // 　取った順番を記録？
-
 
     public void validate(List<Pi> piList) throws InvalidLayoutException {
-        char[][] layout = new char[16][16];
-        for (char[] printLayoutLine : layout) {
-            Arrays.fill(printLayoutLine, ' ');
+
+        if (piList.size() % 2 == 1) {
+            throw new InvalidLayoutException("The count of Pis is odd number.:" + piList.size());
+        }
+        //4つずつある？
+        Map<PiType, List<Pi>> piMap = new HashMap<>();
+        for (Pi pi : piList) {
+            if (!piMap.containsKey(pi.getPiType())) {
+                piMap.put(pi.getPiType(), new ArrayList<>());
+            }
+            piMap.get(pi.getPiType()).add(pi);
+        }
+        for (Map.Entry<PiType, List<Pi>> entry : piMap.entrySet()) {
+            if (entry.getValue().size() != 4) {
+                throw new InvalidLayoutException("The count of " + entry.getKey().toString() + " is not 4.:" + entry.getValue().size());
+            }
+        }
+        char[][][] layout = new char[32][32][32];
+        for (char[][] printLayer : layout) {
+            for (char[] printLayoutLine : printLayer) {
+                Arrays.fill(printLayoutLine, ' ');
+            }
         }
 
         for (Pi pi : piList) {
-            if (layout[pi.getI()][pi.getJ()] != ' '
-                    || layout[pi.getI() + 1][pi.getJ()] != ' '
-                    || layout[pi.getI() + 1][pi.getJ()] != ' '
-                    || layout[pi.getI() + 1][pi.getJ() + 1] != ' ') {
-                throw new InvalidLayoutException(pi.toString());
+            if (layout[pi.getK()][pi.getI()][pi.getJ()] != ' '
+                    || layout[pi.getK()][pi.getI() + 1][pi.getJ()] != ' '
+                    || layout[pi.getK()][pi.getI() + 1][pi.getJ()] != ' '
+                    || layout[pi.getK()][pi.getI() + 1][pi.getJ() + 1] != ' ') {
+                throw new InvalidLayoutException("Pi location(i:j:k) mistake?" + pi.toString());
             }
-            layout[pi.getI()][pi.getJ()] = pi.getPiType().getName();
-            layout[pi.getI()][pi.getJ() + 1] = pi.getPiType().getName();
-            layout[pi.getI() + 1][pi.getJ()] = pi.getPiType().getType();
-            layout[pi.getI() + 1][pi.getJ() + 1] = pi.getPiType().getType();
+            layout[pi.getK()][pi.getI()][pi.getJ()] = pi.getPiType().getName();
+            layout[pi.getK()][pi.getI()][pi.getJ() + 1] = pi.getPiType().getName();
+            layout[pi.getK()][pi.getI() + 1][pi.getJ()] = pi.getPiType().getType();
+            layout[pi.getK()][pi.getI() + 1][pi.getJ() + 1] = pi.getPiType().getType();
         }
     }
 
