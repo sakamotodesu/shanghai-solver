@@ -183,6 +183,53 @@ public class ShanghaiSolverTest {
                 new PlacedPi(suPin, 11, 12, 0),
                 new PlacedPi(eMan, 11, 16, 0),
 
+                new PlacedPi(sanWan, 1, 10, 1),
+
+                new PlacedPi(nan, 2, 7, 1),
+                new PlacedPi(roPin, 2, 13, 1),
+
+                new PlacedPi(sanWan, 3, 5, 1),
+                new PlacedPi(ton, 3, 9, 1),
+                new PlacedPi(uWan, 3, 11, 1),
+                new PlacedPi(chiSou, 3, 15, 1),
+
+                new PlacedPi(roWan, 6, 2, 1),
+                new PlacedPi(eMan, 6, 4, 1),
+                new PlacedPi(haku, 6, 6, 1),
+                new PlacedPi(eSou, 6, 8, 1),
+                new PlacedPi(season, 6, 10, 1),
+                new PlacedPi(ryu, 6, 12, 1),
+                new PlacedPi(ryanPin, 6, 14, 1),
+                new PlacedPi(haku, 6, 16, 1),
+                new PlacedPi(eSou, 6, 18, 1),
+
+                new PlacedPi(chiSou, 7, 0, 1),
+                new PlacedPi(quSou, 7, 20, 1),
+
+                new PlacedPi(uPin, 8, 2, 1),
+                new PlacedPi(ryu, 8, 4, 1),
+                new PlacedPi(ePin, 8, 6, 1),
+                new PlacedPi(sanWan, 8, 8, 1),
+                new PlacedPi(ryanPin, 8, 10, 1),
+                new PlacedPi(quPin, 8, 12, 1),
+                new PlacedPi(hatsu, 8, 14, 1),
+                new PlacedPi(ePin, 8, 16, 1),
+                new PlacedPi(uPin, 8, 18, 1),
+
+                new PlacedPi(suSou, 9, 0, 1),
+                new PlacedPi(nan, 9, 20, 1),
+
+                new PlacedPi(uPin, 10, 2, 1),
+                new PlacedPi(suPin, 10, 6, 1),
+                new PlacedPi(uSou, 10, 14, 1),
+                new PlacedPi(ryanPin, 10, 18, 1),
+
+                new PlacedPi(hatsu, 11, 4, 1),
+                new PlacedPi(haku, 11, 8, 1),
+                new PlacedPi(season, 11, 10, 1),
+                new PlacedPi(roPin, 11, 12, 1),
+                new PlacedPi(ePin, 11, 16, 1),
+
                 new PlacedPi(ryanMan, 0, 2, 1)));
     }
 
