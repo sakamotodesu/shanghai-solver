@@ -30,7 +30,7 @@ public enum Zihai implements PiType {
 
     @Override
     public char getType() {
-        return 'S';
+        return 'Z';
     }
 
 }

@@ -147,6 +147,14 @@ public class ShanghaiSolver {
         }
     }
 
+    public void solve(List<Pi> piList) {
+        List<Pi> solvedList = new ArrayList<>();
+        Collections.shuffle(piList);
+        solve(piList, solvedList);
+        System.out.println(solvedList);
+
+    }
+
     /**
      * @param piList 問題
      * @return true:解けた false:詰んだ
