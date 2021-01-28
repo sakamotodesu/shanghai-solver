@@ -190,30 +190,19 @@ public class ShanghaiSolverTest {
     @Test
     public void solvedTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
-        List<Pi> solvedList = new ArrayList<>();
-        solver.solve(fourPiesPartialRemoval, solvedList);
-        System.out.println(solvedList);
+        solver.solve(fourPiesPartialRemoval);
 
-        solvedList.clear();
-        solver.solve(fourPiesImpossible, solvedList);
-        System.out.println(solvedList);
+        solver.solve(fourPiesImpossible);
 
-        solvedList.clear();
-        solver.solve(sixPiesOnlyOneWayPossible, solvedList);
-        System.out.println(solvedList);
+        solver.solve(sixPiesOnlyOneWayPossible);
 
-        solvedList.clear();
-        solver.solve(twoFloor, solvedList);
-        System.out.println(solvedList);
+        solver.solve(twoFloor);
     }
 
     @Test
     public void solvedNormalTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
-        List<Pi> solvedList = new ArrayList<>();
         solver.validate(normal);
-
-        solver.solve(normal, solvedList);
-        System.out.println(solvedList);
+        solver.solve(normal);
     }
 }

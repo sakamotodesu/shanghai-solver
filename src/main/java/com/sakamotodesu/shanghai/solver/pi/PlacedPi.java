@@ -1,12 +1,26 @@
 package com.sakamotodesu.shanghai.solver.pi;
 
-import com.sakamotodesu.shanghai.solver.pi.FreePi;
-import com.sakamotodesu.shanghai.solver.pi.Pi;
 import com.sakamotodesu.shanghai.solver.pitype.PiType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 @Data
+@EqualsAndHashCode(exclude = {"upperLeft",
+        "middleLeft",
+        "lowerLeft",
+        "upperRight",
+        "middleRight",
+        "lowerRight",
+        "onUpperLeft",
+        "onMiddleLeft",
+        "onLowerLeft",
+        "onUpper",
+        "onMiddle",
+        "onLower",
+        "onUpperRight",
+        "onMiddleRight",
+        "onLowerRight"})
 public class PlacedPi implements Pi {
 
 
