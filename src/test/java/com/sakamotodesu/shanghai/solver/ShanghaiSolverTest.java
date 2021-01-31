@@ -9,10 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.sakamotodesu.shanghai.solver.pitype.Manzu.*;
-import static com.sakamotodesu.shanghai.solver.pitype.Pinzu.*;
-import static com.sakamotodesu.shanghai.solver.pitype.Souzu.*;
-import static com.sakamotodesu.shanghai.solver.pitype.Zihai.*;
+import static com.sakamotodesu.shanghai.solver.pitype.Manzu.eMan;
+import static com.sakamotodesu.shanghai.solver.pitype.Manzu.ryanMan;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -26,8 +24,6 @@ public class ShanghaiSolverTest {
     List<Pi> fourPiesImpossible;
     List<Pi> sixPiesOnlyOneWayPossible;
     List<Pi> twoFloor;
-    List<Pi> normal;
-
 
     @Before
     public void setup() {
@@ -60,73 +56,6 @@ public class ShanghaiSolverTest {
                 new PlacedPi(ryanMan, 0, 0, 1),
                 new PlacedPi(ryanMan, 0, 2, 1)));
 
-        normal = new ArrayList<>(Arrays.asList(new PlacedPi(chiSou, 0, 4, 0),
-                new PlacedPi(eSou, 0, 6, 0),
-                new PlacedPi(chiSou, 0, 12, 0),
-                new PlacedPi(ePin, 0, 14, 0),
-
-                new PlacedPi(season, 2, 2, 0),
-                new PlacedPi(chiSou, 2, 4, 0),
-                new PlacedPi(ryanPin, 2, 6, 0),
-                new PlacedPi(ePin, 2, 8, 0),
-                new PlacedPi(suWan, 2, 10, 0),
-                new PlacedPi(suWan, 2, 12, 0),
-                new PlacedPi(ryanPin, 2, 14, 0),
-                new PlacedPi(sha, 2, 16, 0),
-
-                new PlacedPi(ryanPin, 4, 4, 0),
-                new PlacedPi(ePin, 4, 6, 0),
-                new PlacedPi(suWan, 4, 8, 0),
-                new PlacedPi(suWan, 4, 10, 0),
-                new PlacedPi(ePin, 4, 12, 0),
-                new PlacedPi(eSou, 4, 14, 0),
-
-                new PlacedPi(season, 6, 6, 0),
-                new PlacedPi(eSou, 6, 8, 0),
-                new PlacedPi(ryanPin, 6, 10, 0),
-                new PlacedPi(ton, 6, 12, 0),
-                new PlacedPi(ton, 6, 17, 0),
-
-                new PlacedPi(roSou, 7, 15, 0),
-                new PlacedPi(ryu, 7, 19, 0),
-
-                new PlacedPi(uWan, 8, 8, 0),
-                new PlacedPi(ryu, 8, 10, 0),
-                new PlacedPi(sanSou, 8, 17, 0),
-
-                new PlacedPi(chiSou, 10, 9, 0),
-
-                new PlacedPi(sha, 11, 2, 0),
-
-                new PlacedPi(season, 12, 0, 0),
-                new PlacedPi(sanSou, 12, 4, 0),
-
-                new PlacedPi(sanSou, 13, 2, 0),
-
-                new PlacedPi(ton, 1, 5, 1),
-                new PlacedPi(uWan, 1, 13, 1),
-
-                new PlacedPi(roSou, 2, 3, 1),
-                new PlacedPi(season, 2, 15, 1),
-
-                new PlacedPi(uWan, 3, 5, 1),
-                new PlacedPi(ton, 3, 7, 1),
-                new PlacedPi(eSou, 3, 9, 1),
-                new PlacedPi(sha, 3, 11, 1),
-                new PlacedPi(sanSou, 3, 13, 1),
-
-                new PlacedPi(ryu, 5, 7, 1),
-                new PlacedPi(sha, 5, 9, 1),
-                new PlacedPi(ryu, 5, 11, 1),
-
-                new PlacedPi(roSou, 7, 9, 1),
-                new PlacedPi(uWan, 7, 17, 1),
-
-                new PlacedPi(roSou, 12, 2, 1)
-
-        ));
-
-
     }
 
     @Test
@@ -140,7 +69,7 @@ public class ShanghaiSolverTest {
     @Test
     public void validateTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
-        solver.validate(normal);
+        solver.validate(StageData.getNormal());
     }
 
     @Test(expected = InvalidLayoutException.class)
@@ -202,7 +131,7 @@ public class ShanghaiSolverTest {
     @Test
     public void solvedNormalTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
-        solver.validate(normal);
-        solver.solve(normal);
+        solver.validate(StageData.getNormal());
+        solver.solve(StageData.getNormal());
     }
 }
