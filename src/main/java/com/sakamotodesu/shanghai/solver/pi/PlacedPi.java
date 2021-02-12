@@ -4,6 +4,9 @@ import com.sakamotodesu.shanghai.solver.pitype.PiType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Data
 @EqualsAndHashCode(exclude = {"upperLeft",
@@ -45,6 +48,9 @@ public class PlacedPi implements Pi {
     private Pi onUpperRight = FreePi.getInstance();
     private Pi onMiddleRight = FreePi.getInstance();
     private Pi onLowerRight = FreePi.getInstance();
+
+    // 詰みペアの相互リンクリスト。1個の牌が重なってたり左右デッドロックだったりすることがあるから1:nになる。重なりと左右デッドロックの区別をする必要はない。
+    private List<Pi> deadlockList = new ArrayList<>();
 
     public PlacedPi(PiType piType, int i, int j, int k) {
         this.piType = piType;
@@ -97,5 +103,16 @@ public class PlacedPi implements Pi {
     @Override
     public boolean isFree() {
         return false;
+    }
+
+    @Override
+    public void linkDeadlockPi(Pi pi) {
+        deadlockList.add(pi);
+        pi.getDeadlockList().add(this);
+    }
+
+    @Override
+    public boolean isExist() {
+        return true;
     }
 }

@@ -3,6 +3,8 @@ package com.sakamotodesu.shanghai.solver.pi;
 
 import com.sakamotodesu.shanghai.solver.pitype.PiType;
 
+import java.util.List;
+
 public interface Pi {
 
     void init();
@@ -78,5 +80,11 @@ public interface Pi {
     boolean isRemoval();
 
     boolean isFree();
+
+    List<Pi> getDeadlockList();
+
+    void linkDeadlockPi(Pi pi);
+
+    boolean isExist();
 
 }

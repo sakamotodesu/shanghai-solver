@@ -5,10 +5,9 @@ import com.sakamotodesu.shanghai.solver.pitype.PiType;
 
 import java.util.*;
 
-import static com.sakamotodesu.shanghai.solver.pitype.Nashi.nashi;
-
 public final class ShanghaiSolver {
 
+    // TODO logger
 
     public static long unsolvedCount = 0;
 
@@ -54,7 +53,7 @@ public final class ShanghaiSolver {
     //TODO 毎回全部updateする必要ある？
     // 1回removalと判定されたらそのあともremovalのままだよね
     // removalがnot removalに戻ることはない
-    public void update(List<Pi> piList) {
+    public void updateNeighborhood(List<Pi> piList) {
         for (Pi pi : piList) {
             pi.init();
             for (Pi qi : piList) {
@@ -154,99 +153,122 @@ public final class ShanghaiSolver {
         }
     }
 
-    // 詰み探索
-    // ステージから詰みの組み合わせをリストとして見つける
-    // ステージにつき1回だけ計算する
-    // 探索を進めて詰みが解決したら消していく
+    // 詰み回避探索
+    // 方法論
+    // 　上海では、残された牌の配置によりそれ以上ゲームを進められない詰みパターンが存在する。
+    // 　その詰みパターンが発生しないように牌を選ぶのが攻略法になるので、その思考回路を探索にも適用する。
+    // 　このアルゴリズムでは事前に全ての牌の情報がわかっている(完全情報ゲームである)前提になっているので、まず事前に詰みパターンを調べておくことができる。
+    // 　詰みパターンは重なっているもの、左右で1212のようにデッドロックしているもの、1122のようにデッドロックしているものに分類される。
+    // 　いずれも間に他の牌が挟まっていても詰みとなる。また重なりと左右のデッドロックの詰みを同じ牌に同時に発生させることもできる。
+    // 　これらの詰みパターンを事前に調べておき、探索で撮る牌を選んだ時点で詰みパターンに陥るか検査し、陥るならそのルートをスキップする。
+    // 詰みパターンを考慮した探索の実装
+    // 　ステージから詰みの組み合わせを事前に調べておいて牌に詰みペアを相互リンクしておく
+    //　 　ステージにつき1回だけ計算する
+    //　　　詰みリンクは重なりと左右それぞれ持つ
+    // 　取る牌を選択した時点でその牌を取ったせいで詰みが発生するか都度調べる
+    // 　　牌を取った後に残った2牌が重なりor左右いずれかの詰みパターンのペアになってたらアウト
+    // 　　　詰みリンクは持ってるけどリンク先が残された牌でなければセーフ
+    // 詰みパターン調査方法
+    // 　重なりの調査も左右の調査もある牌を起点に牌の取得を阻害する配列を作り、その中に起点と同じ牌があるかを調べる必要がある。
+    // 　ただ牌の配置は上下左右にずれることができるので、起点からTreeができてしまう。
+    // 　そのため、Treeの中でroot牌と同じleaf牌を見つけたら、rootとleafを最短距離で結んだ配列を切り出せばよい。(両端が同じ牌で終わっている配列を閉じた配列とする)
+    // 　重なりの調査ならここで終わりだが、左右の調査はその閉じた配列の中から再度デッドロックを引き起こす牌を調べる必要がある。
+    // 　なので閉じた配列中の牌を新たに起点としTree探索->閉じた配列の切り出しという同じ作業が必要になる。
+
+    // 詰みパターン調査の実装
+    // 　重なり
+    // 　　全ての牌について、Tree探索->rootと同じ牌が見つかったら相互リンク1:n
+    // 　左右
+    // TODO Treeから閉じた配列を切り出す処理は共通で作れそう
 
 
-    public List<List<Pi>> blocks(List<Pi> piList, boolean debug) {
+    // 小さい問題に分割しよう
 
-        List<List<Pi>> blocks = new ArrayList<>();
-        // 重なってるパターン
-        // 自分の上にいるやつを永遠と探せばいい
-        // やっぱ厳密な位置をメンバ変数で持たせるの意味ないかなあ載ってるか左か右かだけでよさそう
-        // まず自分に載っかってるやつを全部引っ張ってきて、その中に自分と同じタイプがいるか調べればいいか
+    public void updateDeadlock(List<Pi> piList, boolean debug) {
+        updateDeadlockOnBlocks(piList);
+        updateDeadlockSideBlocks(piList, debug);
+    }
+
+    /**
+     * @param piList 問題
+     */
+    public void updateDeadlockOnBlocks(List<Pi> piList) {
         for (Pi pi : piList) {
-            List<Pi> piOnBlocks = new ArrayList<>();
-            List<Pi> piOnDeadLocks = new ArrayList<>();
-            onBlocks(piOnBlocks, pi);
-            for (Pi onPi : piOnBlocks) {
-                if (onPi.getPiType() == pi.getPiType()) {
-                    piOnDeadLocks.add(onPi);
-                }
-            }
-            if (piOnDeadLocks.size() != 0) {
-                blocks.add(piOnDeadLocks);
-            }
-        }
-
-        // 横でデッドロックしてるパターン
-        // 自分の横にいるやつのうちデッドロックになってるのを探せばいい
-        // 左右に伸びたリストを作る、片側だけだと見逃しが出る
-        //    自分と同じ牌を探す
-        //      会ったらその間の牌がそのリストの自分を超えてもう1個あるか探す
-        //    Upper Lowerにずれていくリストにどう対処するか？
-        //  Tree構造を左右それぞれに切り出す
-        //    root側に戻ってたどれるように親ノードが1個になるよう刈り取って切り出す
-        //    Tree内に自分(root)と同じ牌(leaf)を探索する
-        //      見つけたらrootとleafまでの最短経路をリストとして切り出す
-        //        そのリストのなかでrootとleafの間の牌をリストアップする
-        //          間の牌がleafより先に存在しているか探索する
-        //            存在していたらデッドロック構造を発見したことになる
-        //
-
-        return blocks;
-    }
-
-    private void onBlocks(List<Pi> piOnBlocks, Pi pi) {
-        if (pi.getOnUpperLeft().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnLower());
-            onBlocks(piOnBlocks, pi.getOnLower());
-        }
-        if (pi.getOnMiddleLeft().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnMiddleLeft());
-            onBlocks(piOnBlocks, pi.getOnMiddleLeft());
-        }
-        if (pi.getOnLowerLeft().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnLowerLeft());
-            onBlocks(piOnBlocks, pi.getOnLowerLeft());
-        }
-        if (pi.getOnUpper().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnUpper());
-            onBlocks(piOnBlocks, pi.getOnUpper());
-        }
-        if (pi.getOnMiddle().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnMiddle());
-            onBlocks(piOnBlocks, pi.getOnMiddle());
-        }
-        if (pi.getOnLower().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnLower());
-            onBlocks(piOnBlocks, pi.getOnLower());
-        }
-        if (pi.getOnUpperRight().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnUpperRight());
-            onBlocks(piOnBlocks, pi.getOnUpperRight());
-        }
-        if (pi.getOnMiddleRight().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnMiddleRight());
-            onBlocks(piOnBlocks, pi.getOnMiddleRight());
-        }
-        if (pi.getOnLowerRight().getPiType() != nashi) {
-            piOnBlocks.add(pi);
-            piOnBlocks.add(pi.getOnLowerRight());
-            onBlocks(piOnBlocks, pi.getOnLowerRight());
+            treeSearchOnBlocksRec(pi, pi);
         }
     }
 
+    private void treeSearchOnBlocksRec(Pi piRoot, Pi piLeaf) {
+        if (piLeaf.getOnUpperLeft().isExist()) {
+            if (piLeaf.getOnUpperLeft().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnUpperLeft());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnUpperLeft());
+        }
+
+        if (piLeaf.getOnMiddleLeft().isExist()) {
+            if (piLeaf.getOnMiddleLeft().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnMiddleLeft());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnMiddleLeft());
+        }
+
+        if (piLeaf.getOnLowerLeft().isExist()) {
+            if (piLeaf.getOnLowerLeft().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnLowerLeft());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnLowerLeft());
+        }
+
+        if (piLeaf.getOnUpper().isExist()) {
+            if (piLeaf.getOnUpper().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnUpper());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnUpper());
+        }
+
+        if (piLeaf.getOnMiddle().isExist()) {
+            if (piLeaf.getOnMiddle().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnMiddle());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnMiddle());
+        }
+
+        if (piLeaf.getOnLower().isExist()) {
+            if (piLeaf.getOnLower().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnLower());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnLower());
+        }
+
+        if (piLeaf.getOnUpperRight().isExist()) {
+            if (piLeaf.getOnUpperRight().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnUpperRight());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnUpperRight());
+        }
+        if (piLeaf.getOnMiddleRight().isExist()) {
+            if (piLeaf.getOnMiddleRight().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnMiddleRight());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnMiddleRight());
+        }
+
+        if (piLeaf.getOnLowerRight().isExist()) {
+            if (piLeaf.getOnLowerRight().getPiType() == piRoot.getPiType()) {
+                piRoot.linkDeadlockPi(piLeaf.getOnLowerRight());
+            }
+            treeSearchOnBlocksRec(piRoot, piLeaf.getOnLowerRight());
+        }
+    }
+
+    /**
+     * @param piList 問題
+     * @param debug  true:詳細プリント
+     */
+    public void updateDeadlockSideBlocks(List<Pi> piList, boolean debug) {
+
+    }
 
     public void solve(List<Pi> piList) {
         solve(piList, false);
@@ -267,8 +289,12 @@ public final class ShanghaiSolver {
     // TODO もう詰んでることを検知して早めに探索を切り上げる。すべての詰みパターンを検知する必要はない
     // TODO ほかに刈り込みする案ないかねえ
 
+
     /**
-     * @param piList 問題
+     * @param piList        問題
+     * @param solvedList    解答
+     * @param rollbackCount 解答を巻き戻す牌の数
+     * @param debug         true:詳細プリント
      * @return true:解けた false:詰んだ
      */
     public boolean solve(List<Pi> piList, List<Pi> solvedList, int rollbackCount, boolean debug) {
@@ -281,7 +307,7 @@ public final class ShanghaiSolver {
             printStage(piList);
         }
 
-        update(piList);
+        updateNeighborhood(piList);
 
         int removedCount = 0;
 

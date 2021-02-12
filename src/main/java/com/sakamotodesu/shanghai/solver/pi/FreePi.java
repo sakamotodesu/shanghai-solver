@@ -2,6 +2,8 @@ package com.sakamotodesu.shanghai.solver.pi;
 
 import com.sakamotodesu.shanghai.solver.pitype.PiType;
 
+import java.util.List;
+
 import static com.sakamotodesu.shanghai.solver.pitype.Nashi.nashi;
 
 public class FreePi implements Pi {
@@ -198,6 +200,21 @@ public class FreePi implements Pi {
     @Override
     public boolean isFree() {
         return true;
+    }
+
+    @Override
+    public List<Pi> getDeadlockList() {
+        return null;
+    }
+
+    @Override
+    public void linkDeadlockPi(Pi pi) {
+
+    }
+
+    @Override
+    public boolean isExist() {
+        return false;
     }
 
     @Override
