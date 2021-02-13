@@ -170,103 +170,57 @@ public final class ShanghaiSolver {
     // 　　　詰みリンクは持ってるけどリンク先が残された牌でなければセーフ
     // 詰みパターン調査方法
     // 　重なりの調査も左右の調査もある牌を起点に牌の取得を阻害する配列を作り、その中に起点と同じ牌があるかを調べる必要がある。
-    // 　ただ牌の配置は上下左右にずれることができるので、起点からTreeができてしまう。
-    // 　そのため、Treeの中でroot牌と同じleaf牌を見つけたら、rootとleafを最短距離で結んだ配列を切り出せばよい。(両端が同じ牌で終わっている配列を閉じた配列とする)
-    // 　重なりの調査ならここで終わりだが、左右の調査はその閉じた配列の中から再度デッドロックを引き起こす牌を調べる必要がある。
-    // 　なので閉じた配列中の牌を新たに起点としTree探索->閉じた配列の切り出しという同じ作業が必要になる。
+    // 　ただ牌の配置は上下左右にずれることができるので、起点からDAG(有向非巡回グラフ)ができてしまう。
+    // 　そのため、DAGの中で起点牌と同じ牌を見つける作業が必要になる。
+    // 　重なりの調査ならDAGの中に起点と同じ牌を見つけた時点で相互リンクにして終了するが、左右の調査はその起点と終点の間にある牌を調べる必要がある。
+    // 　起点と終点を結ぶ全配列パターンについて、その配列中の牌を機転に再度DAGを切り出し、1212の構造になるパターンを探す。
+
 
     // 詰みパターン調査の実装
     // 　重なり
-    // 　　全ての牌について、Tree探索->rootと同じ牌が見つかったら相互リンク1:n
+    // 　　全ての牌について、DAG探索->rootと同じ牌が見つかったら相互リンク1:n
     // 　左右
-    // TODO Treeから閉じた配列を切り出す処理は共通で作れそう
 
 
     // 小さい問題に分割しよう
 
-    public void updateDeadlock(List<Pi> piList, boolean debug) {
+    public void updateDeadlock(List<Pi> piList) {
         updateDeadlockOnBlocks(piList);
-        updateDeadlockSideBlocks(piList, debug);
+        updateDeadlockSideBlocks(piList);
+        updateDeadlockSideBlocksContinuous(piList);
+
     }
 
     /**
      * @param piList 問題
      */
     public void updateDeadlockOnBlocks(List<Pi> piList) {
-        for (Pi pi : piList) {
-            treeSearchOnBlocksRec(pi, pi);
-        }
+
     }
 
-    private void treeSearchOnBlocksRec(Pi piRoot, Pi piLeaf) {
-        if (piLeaf.getOnUpperLeft().isExist()) {
-            if (piLeaf.getOnUpperLeft().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnUpperLeft());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnUpperLeft());
-        }
 
-        if (piLeaf.getOnMiddleLeft().isExist()) {
-            if (piLeaf.getOnMiddleLeft().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnMiddleLeft());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnMiddleLeft());
-        }
+    /**
+     * 左右の詰みパターン検索
+     * 1212のパターン
+     *
+     * @param piList 問題
+     */
+    public void updateDeadlockSideBlocks(List<Pi> piList) {
 
-        if (piLeaf.getOnLowerLeft().isExist()) {
-            if (piLeaf.getOnLowerLeft().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnLowerLeft());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnLowerLeft());
-        }
+    }
+    // 起点からTree探索で同じ牌を探しに行って、見つけてからどうする？どうやって最短の戻り経路を探す？あーそもそも複数経路あるのか最短経路も
+    //   どっちの経路にあるかわからないな
+    private void treeSearchSideBlocksRec(Pi piRoot) {
 
-        if (piLeaf.getOnUpper().isExist()) {
-            if (piLeaf.getOnUpper().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnUpper());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnUpper());
-        }
-
-        if (piLeaf.getOnMiddle().isExist()) {
-            if (piLeaf.getOnMiddle().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnMiddle());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnMiddle());
-        }
-
-        if (piLeaf.getOnLower().isExist()) {
-            if (piLeaf.getOnLower().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnLower());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnLower());
-        }
-
-        if (piLeaf.getOnUpperRight().isExist()) {
-            if (piLeaf.getOnUpperRight().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnUpperRight());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnUpperRight());
-        }
-        if (piLeaf.getOnMiddleRight().isExist()) {
-            if (piLeaf.getOnMiddleRight().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnMiddleRight());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnMiddleRight());
-        }
-
-        if (piLeaf.getOnLowerRight().isExist()) {
-            if (piLeaf.getOnLowerRight().getPiType() == piRoot.getPiType()) {
-                piRoot.linkDeadlockPi(piLeaf.getOnLowerRight());
-            }
-            treeSearchOnBlocksRec(piRoot, piLeaf.getOnLowerRight());
-        }
     }
 
     /**
+     * 左右の詰みパターン検索
+     * 1122のパターン
+     *
      * @param piList 問題
-     * @param debug  true:詳細プリント
      */
-    public void updateDeadlockSideBlocks(List<Pi> piList, boolean debug) {
+    public void updateDeadlockSideBlocksContinuous(List<Pi> piList) {
 
     }
 

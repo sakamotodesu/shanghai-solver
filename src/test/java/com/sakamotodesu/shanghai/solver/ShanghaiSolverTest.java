@@ -27,6 +27,7 @@ public class ShanghaiSolverTest {
     List<Pi> twoFloor;
     List<Pi> normal;
 
+
     @Before
     public void setup() {
         twoPiesMiddleRight = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
@@ -138,15 +139,6 @@ public class ShanghaiSolverTest {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(normal);
         solver.solve(normal);
-    }
-
-    @Test
-    public void updateDeadlockOnBlocksTest() {
-        ShanghaiSolver solver = new ShanghaiSolver();
-        solver.updateNeighborhood(twoPiesOnPies);
-        solver.updateDeadlockOnBlocks(twoPiesOnPies);
-        assertThat(twoPiesOnPies.get(0).getDeadlockList().get(0).getPiType(), is(eMan));
-        assertThat(twoPiesOnPies.get(1).getDeadlockList().get(0).getPiType(), is(eMan));
     }
 
 }
