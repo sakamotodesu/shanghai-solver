@@ -138,7 +138,7 @@ public class ShanghaiSolverTest {
     public void solvedNormalTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(normal);
-        solver.solve(normal);
+        solver.solve(normal, true);
     }
 
 }

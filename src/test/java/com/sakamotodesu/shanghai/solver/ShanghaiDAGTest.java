@@ -46,5 +46,10 @@ public class ShanghaiDAGTest {
 
     @Test
     public void search() {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.updateNeighborhood(deadlockOnBlocksBranch);
+        ShanghaiDAG dag = ShanghaiDAG.getOnDAG(deadlockOnBlocksBranch.get(0));
+        assertThat(dag.search().size(), is(3));
+
     }
 }

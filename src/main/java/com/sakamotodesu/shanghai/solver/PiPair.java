@@ -7,7 +7,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class ShanghaiDAGEdge {
+public class PiPair {
     private Pi from;
     private Pi to;
 

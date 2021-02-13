@@ -22,7 +22,7 @@ public class ShanghaiDAG {
     @Getter
     private final List<Pi> vertexList = new ArrayList<>();
     @Getter
-    private final List<ShanghaiDAGEdge> edgeList = new ArrayList<>();
+    private final List<PiPair> edgeList = new ArrayList<>();
     // 起点は特別扱い
     private Pi startVertex = FreePi.getInstance();
 
@@ -121,22 +121,24 @@ public class ShanghaiDAG {
      * @param to   辺の終点
      */
     public void addEdge(Pi from, Pi to) {
-        for (ShanghaiDAGEdge edge : edgeList) {
+        for (PiPair edge : edgeList) {
             if (edge.eq(from, to)) {
                 return;
             }
         }
-        edgeList.add(new ShanghaiDAGEdge(from, to));
+        edgeList.add(new PiPair(from, to));
     }
 
 
     /**
      * DAGの中に起点と同じ牌があるか探索
      *
-     * @return 起点と同じだった牌。起点の牌も混ざる。
+     * @return 起点と同じだった牌。
      */
     public List<Pi> search() {
-        return vertexList.stream().filter(pi -> pi.getPiType() == startVertex.getPiType()).collect(Collectors.toList());
+        List<Pi> searched = vertexList.stream().filter(pi -> pi.getPiType() == startVertex.getPiType()).collect(Collectors.toList());
+        searched.remove(startVertex);
+        return searched;
     }
 
 }

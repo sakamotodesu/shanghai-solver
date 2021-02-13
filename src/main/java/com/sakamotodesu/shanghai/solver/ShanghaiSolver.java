@@ -170,10 +170,10 @@ public final class ShanghaiSolver {
     // 　　　詰みリンクは持ってるけどリンク先が残された牌でなければセーフ
     // 詰みパターン調査方法
     // 　重なりの調査も左右の調査もある牌を起点に牌の取得を阻害する配列を作り、その中に起点と同じ牌があるかを調べる必要がある。
-    // 　ただ牌の配置は上下左右にずれることができるので、起点からDAG(有向非巡回グラフ)ができてしまう。
+    // 　牌の配置は上下左右にずれることができるので、起点からDAG(有向非巡回グラフ)ができる。
     // 　そのため、DAGの中で起点牌と同じ牌を見つける作業が必要になる。
     // 　重なりの調査ならDAGの中に起点と同じ牌を見つけた時点で相互リンクにして終了するが、左右の調査はその起点と終点の間にある牌を調べる必要がある。
-    // 　起点と終点を結ぶ全配列パターンについて、その配列中の牌を機転に再度DAGを切り出し、1212の構造になるパターンを探す。
+    // 　終点からさらにその先にDAGを構築し、起点・終点の間にある牌がそのDAGの中に存在すれば1212のパターンになっている。
 
 
     // 詰みパターン調査の実装
@@ -188,14 +188,19 @@ public final class ShanghaiSolver {
         updateDeadlockOnBlocks(piList);
         updateDeadlockSideBlocks(piList);
         updateDeadlockSideBlocksContinuous(piList);
-
     }
 
     /**
      * @param piList 問題
      */
     public void updateDeadlockOnBlocks(List<Pi> piList) {
-
+        for (Pi pi : piList) {
+            ShanghaiDAG onDag = ShanghaiDAG.getOnDAG(pi);
+            List<Pi> deadlockList = onDag.search();
+            if (deadlockList.size() != 0) {
+                deadlockList.forEach(pi::linkDeadlockPi);
+            }
+        }
     }
 
 
@@ -208,6 +213,7 @@ public final class ShanghaiSolver {
     public void updateDeadlockSideBlocks(List<Pi> piList) {
 
     }
+
     // 起点からTree探索で同じ牌を探しに行って、見つけてからどうする？どうやって最短の戻り経路を探す？あーそもそも複数経路あるのか最短経路も
     //   どっちの経路にあるかわからないな
     private void treeSearchSideBlocksRec(Pi piRoot) {
@@ -230,6 +236,7 @@ public final class ShanghaiSolver {
 
     public void solve(List<Pi> piList, boolean debug) {
         List<Pi> solvedList = new ArrayList<>();
+        updateDeadlock(piList);
         solve(piList, solvedList, 0, debug);
         System.out.println(solvedList);
     }
@@ -299,26 +306,26 @@ public final class ShanghaiSolver {
 
         // 細かく探索
         // 同じ牌で3C2のペアと2C1のペア網羅パターン作れればパターン網羅できそう
-        Map<Pi, Pi> piPairMap = new HashMap<>();
+        List<PiPair> piPairList = new ArrayList<>();
         for (Map.Entry<PiType, List<Pi>> entry : piTowMap.entrySet()) {
             if (entry.getValue().size() == 2) {
-                piPairMap.put(entry.getValue().get(0), entry.getValue().get(1));
+                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
             } else if (entry.getValue().size() == 3) {
-                piPairMap.put(entry.getValue().get(0), entry.getValue().get(1));
-                piPairMap.put(entry.getValue().get(0), entry.getValue().get(2));
-                piPairMap.put(entry.getValue().get(1), entry.getValue().get(2));
+                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(2)));
+                piPairList.add(new PiPair(entry.getValue().get(1), entry.getValue().get(2)));
             }
         }
-        for (Map.Entry<Pi, Pi> pair : piPairMap.entrySet()) {
+        for (PiPair pair : piPairList) {
             List<Pi> recRemovedList = new ArrayList<>(piList);
-            recRemovedList.remove(pair.getKey());
-            recRemovedList.remove(pair.getValue());
-            solvedList.add(pair.getKey());
-            solvedList.add(pair.getValue());
+            recRemovedList.remove(pair.getFrom());
+            recRemovedList.remove(pair.getTo());
+            solvedList.add(pair.getFrom());
+            solvedList.add(pair.getTo());
             removedCount += 2;
             if (debug) {
-                System.out.println("removed:" + pair.getKey());
-                System.out.println("removed:" + pair.getValue());
+                System.out.println("removed:" + pair.getFrom());
+                System.out.println("removed:" + pair.getTo());
             }
             if (solve(recRemovedList, solvedList, removedCount, debug)) {
                 return true;
