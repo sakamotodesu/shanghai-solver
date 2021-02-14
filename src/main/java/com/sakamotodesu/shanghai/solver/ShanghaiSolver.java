@@ -4,6 +4,7 @@ import com.sakamotodesu.shanghai.solver.pi.Pi;
 import com.sakamotodesu.shanghai.solver.pitype.PiType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class ShanghaiSolver {
 
@@ -230,15 +231,17 @@ public final class ShanghaiSolver {
 
     }
 
-    public void solve(List<Pi> piList) {
-        solve(piList, false);
+    public boolean solve(List<Pi> piList) {
+        return solve(piList, false);
     }
 
-    public void solve(List<Pi> piList, boolean debug) {
+    public boolean solve(List<Pi> piList, boolean debug) {
         List<Pi> solvedList = new ArrayList<>();
+        updateNeighborhood(piList);
         updateDeadlock(piList);
-        solve(piList, solvedList, 0, debug);
+        boolean ret = solve(piList, solvedList, 0, debug);
         System.out.println(solvedList);
+        return ret;
     }
 
     // 計算量えぐめ
@@ -317,6 +320,13 @@ public final class ShanghaiSolver {
             }
         }
         for (PiPair pair : piPairList) {
+            // pairを取ったら詰むならスキップ
+            if (isCheckmate(piList, pair)) {
+                if (debug) {
+                    System.out.println("checkmate:" + pair);
+                }
+                continue;
+            }
             List<Pi> recRemovedList = new ArrayList<>(piList);
             recRemovedList.remove(pair.getFrom());
             recRemovedList.remove(pair.getTo());
@@ -345,5 +355,26 @@ public final class ShanghaiSolver {
             }
         }
         return false;
+    }
+
+    /**
+     * 牌をとったら詰むかチェック
+     *
+     * @param piList 問題
+     * @param pair   削除候補
+     * @return true:詰んだ false:詰んでない
+     */
+    private boolean isCheckmate(List<Pi> piList, PiPair pair) {
+        List<Pi> checkList = new ArrayList<>(piList);
+        checkList.remove(pair.getFrom());
+        checkList.remove(pair.getTo());
+        List<Pi> restPiList = checkList.stream().filter(pi -> pi.getPiType() == pair.getFrom().getPiType()).collect(Collectors.toList());
+
+        // 牌をとったら、同種の牌は2個か0個のどちらか。0個なら詰みはない。
+        if (restPiList.size() == 0) {
+            return false;
+        }
+        // 残った2個が相互にdeadlockListに入ってたら詰み
+        return restPiList.get(0).getDeadlockList().contains(restPiList.get(1)) && restPiList.get(1).getDeadlockList().contains(restPiList.get(0));
     }
 }

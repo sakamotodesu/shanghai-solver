@@ -26,6 +26,7 @@ public class ShanghaiSolverTest {
     List<Pi> sixPiesOnlyOneWayPossible;
     List<Pi> twoFloor;
     List<Pi> normal;
+    List<Pi> deadlockOnBlocksCheckmate;
 
 
     @Before
@@ -61,6 +62,14 @@ public class ShanghaiSolverTest {
                 new PlacedPi(ryanMan, 0, 0, 1),
                 new PlacedPi(ryanMan, 0, 2, 1)));
         normal = new ArrayList<>(StageData.getNormal());
+        deadlockOnBlocksCheckmate = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
+                new PlacedPi(eMan, 0, 2, 0),
+                new PlacedPi(ryanMan, 2, 0, 0),
+                new PlacedPi(ryanMan, 2, 2, 0),
+                new PlacedPi(eMan, 0, 6, 0),
+                new PlacedPi(ryanMan, 1, 5, 1),
+                new PlacedPi(ryanMan, 1, 7, 1),
+                new PlacedPi(eMan, 2, 4, 2)));
 
     }
 
@@ -125,20 +134,27 @@ public class ShanghaiSolverTest {
     @Test
     public void solvedTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
-        solver.solve(fourPiesPartialRemoval);
+        assertThat(solver.solve(fourPiesPartialRemoval), is(true));
 
-        solver.solve(fourPiesImpossible);
+        assertThat(solver.solve(fourPiesImpossible), is(false));
 
-        solver.solve(sixPiesOnlyOneWayPossible);
+        assertThat(solver.solve(sixPiesOnlyOneWayPossible), is(true));
 
-        solver.solve(twoFloor);
+        assertThat(solver.solve(twoFloor), is(true));
     }
 
     @Test
     public void solvedNormalTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(normal);
-        solver.solve(normal, true);
+        assertThat(solver.solve(normal, true), is(true));
+    }
+
+    @Test
+    public void solvedDeadlockOnBlocksTest() throws InvalidLayoutException {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.validate(deadlockOnBlocksCheckmate);
+        assertThat(solver.solve(deadlockOnBlocksCheckmate, true), is(true));
     }
 
 }
