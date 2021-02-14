@@ -32,70 +32,103 @@ public class ShanghaiDAG {
      * @param rootPi 起点
      * @return 起点から重なり方向に生成されたDAG
      */
-    public static ShanghaiDAG getOnDAG(Pi rootPi) {
-        ShanghaiDAG onDag = new ShanghaiDAG();
-        onDag.addVertex(rootPi);
-        generateOnDAGRec(onDag, rootPi);
-        return onDag;
+    public static ShanghaiDAG getFloorDAG(Pi rootPi) {
+        ShanghaiDAG floorDag = new ShanghaiDAG();
+        floorDag.addVertex(rootPi);
+        generateFloorDAGRec(floorDag, rootPi);
+        return floorDag;
     }
 
-    private static void generateOnDAGRec(ShanghaiDAG onDag, Pi pi) {
+    private static void generateFloorDAGRec(ShanghaiDAG floorDag, Pi pi) {
         if (pi.getOnUpperLeft().isExist()) {
-            onDag.addVertex(pi.getOnUpperLeft());
-            onDag.addEdge(pi, pi.getOnUpperLeft());
-            generateOnDAGRec(onDag, pi.getOnUpperLeft());
+            floorDag.addVertex(pi.getOnUpperLeft());
+            floorDag.addEdge(pi, pi.getOnUpperLeft());
+            generateFloorDAGRec(floorDag, pi.getOnUpperLeft());
         }
 
         if (pi.getOnMiddleLeft().isExist()) {
-            onDag.addVertex(pi.getOnMiddleLeft());
-            onDag.addEdge(pi, pi.getOnMiddleLeft());
-            generateOnDAGRec(onDag, pi.getOnMiddleLeft());
+            floorDag.addVertex(pi.getOnMiddleLeft());
+            floorDag.addEdge(pi, pi.getOnMiddleLeft());
+            generateFloorDAGRec(floorDag, pi.getOnMiddleLeft());
         }
 
         if (pi.getOnLowerLeft().isExist()) {
-            onDag.addVertex(pi.getOnLowerLeft());
-            onDag.addEdge(pi, pi.getOnLowerLeft());
-            generateOnDAGRec(onDag, pi.getOnLowerLeft());
+            floorDag.addVertex(pi.getOnLowerLeft());
+            floorDag.addEdge(pi, pi.getOnLowerLeft());
+            generateFloorDAGRec(floorDag, pi.getOnLowerLeft());
         }
 
         if (pi.getOnUpper().isExist()) {
-            onDag.addVertex(pi.getOnUpper());
-            onDag.addEdge(pi, pi.getOnUpper());
-            generateOnDAGRec(onDag, pi.getOnUpper());
+            floorDag.addVertex(pi.getOnUpper());
+            floorDag.addEdge(pi, pi.getOnUpper());
+            generateFloorDAGRec(floorDag, pi.getOnUpper());
         }
 
         if (pi.getOnMiddle().isExist()) {
-            onDag.addVertex(pi.getOnMiddle());
-            onDag.addEdge(pi, pi.getOnMiddle());
-            generateOnDAGRec(onDag, pi.getOnMiddle());
+            floorDag.addVertex(pi.getOnMiddle());
+            floorDag.addEdge(pi, pi.getOnMiddle());
+            generateFloorDAGRec(floorDag, pi.getOnMiddle());
         }
 
         if (pi.getOnLower().isExist()) {
-            onDag.addVertex(pi.getOnLower());
-            onDag.addEdge(pi, pi.getOnLower());
-            generateOnDAGRec(onDag, pi.getOnLower());
+            floorDag.addVertex(pi.getOnLower());
+            floorDag.addEdge(pi, pi.getOnLower());
+            generateFloorDAGRec(floorDag, pi.getOnLower());
         }
 
         if (pi.getOnUpperRight().isExist()) {
-            onDag.addVertex(pi.getOnUpperRight());
-            onDag.addEdge(pi, pi.getOnUpperRight());
-            generateOnDAGRec(onDag, pi.getOnUpperRight());
+            floorDag.addVertex(pi.getOnUpperRight());
+            floorDag.addEdge(pi, pi.getOnUpperRight());
+            generateFloorDAGRec(floorDag, pi.getOnUpperRight());
         }
 
         if (pi.getOnMiddleRight().isExist()) {
-            onDag.addVertex(pi.getOnMiddleRight());
-            onDag.addEdge(pi, pi.getOnMiddleRight());
-            generateOnDAGRec(onDag, pi.getOnMiddleRight());
+            floorDag.addVertex(pi.getOnMiddleRight());
+            floorDag.addEdge(pi, pi.getOnMiddleRight());
+            generateFloorDAGRec(floorDag, pi.getOnMiddleRight());
         }
 
         if (pi.getOnLowerRight().isExist()) {
-            onDag.addVertex(pi.getOnLowerRight());
-            onDag.addEdge(pi, pi.getOnLowerRight());
-            generateOnDAGRec(onDag, pi.getOnLowerRight());
+            floorDag.addVertex(pi.getOnLowerRight());
+            floorDag.addEdge(pi, pi.getOnLowerRight());
+            generateFloorDAGRec(floorDag, pi.getOnLowerRight());
         }
 
     }
 
+    /**
+     * 重なりDAG作成
+     *
+     * @param rootPi 起点
+     * @return 起点から重なり方向に生成されたDAG
+     */
+    public static ShanghaiDAG getRightSideDAG(Pi rootPi) {
+        ShanghaiDAG rightSideDag = new ShanghaiDAG();
+        rightSideDag.addVertex(rootPi);
+        generateRightSideDAGRec(rightSideDag, rootPi);
+        return rightSideDag;
+    }
+
+    private static void generateRightSideDAGRec(ShanghaiDAG rightSideDag, Pi pi) {
+        if (pi.getUpperRight().isExist()) {
+            rightSideDag.addVertex(pi.getUpperRight());
+            rightSideDag.addEdge(pi, pi.getUpperRight());
+            generateRightSideDAGRec(rightSideDag, pi.getUpperRight());
+        }
+
+        if (pi.getMiddleRight().isExist()) {
+            rightSideDag.addVertex(pi.getMiddleRight());
+            rightSideDag.addEdge(pi, pi.getMiddleRight());
+            generateRightSideDAGRec(rightSideDag, pi.getMiddleRight());
+        }
+
+        if (pi.getLowerRight().isExist()) {
+            rightSideDag.addVertex(pi.getLowerRight());
+            rightSideDag.addEdge(pi, pi.getLowerRight());
+            generateRightSideDAGRec(rightSideDag, pi.getLowerRight());
+        }
+
+    }
 
     /**
      * 頂点の追加

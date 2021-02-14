@@ -196,7 +196,7 @@ public final class ShanghaiSolver {
      */
     public void updateDeadlockOnBlocks(List<Pi> piList) {
         for (Pi pi : piList) {
-            ShanghaiDAG onDag = ShanghaiDAG.getOnDAG(pi);
+            ShanghaiDAG onDag = ShanghaiDAG.getFloorDAG(pi);
             List<Pi> deadlockList = onDag.search();
             if (deadlockList.size() != 0) {
                 deadlockList.forEach(pi::linkDeadlockPi);
@@ -208,6 +208,7 @@ public final class ShanghaiSolver {
     /**
      * 左右の詰みパターン検索
      * 1212のパターン
+     * 起点から右側を見るだけでいい
      *
      * @param piList 問題
      */
@@ -215,11 +216,6 @@ public final class ShanghaiSolver {
 
     }
 
-    // 起点からTree探索で同じ牌を探しに行って、見つけてからどうする？どうやって最短の戻り経路を探す？あーそもそも複数経路あるのか最短経路も
-    //   どっちの経路にあるかわからないな
-    private void treeSearchSideBlocksRec(Pi piRoot) {
-
-    }
 
     /**
      * 左右の詰みパターン検索
