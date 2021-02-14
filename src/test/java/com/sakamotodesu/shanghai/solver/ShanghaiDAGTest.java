@@ -55,18 +55,28 @@ public class ShanghaiDAGTest {
     }
 
     @Test
-    public void getRightSideDAG() {
+    public void getRightSideDAGTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.updateNeighborhood(deadlockRightSide);
         solver.printStage(deadlockRightSide);
         ShanghaiDAG dag = ShanghaiDAG.getRightSideDAG(deadlockRightSide.get(0));
         assertThat(dag.getVertexList().size(), is(12));
         assertThat(dag.getEdgeList().size(), is(14));
-
     }
 
     @Test
-    public void search() {
+    public void partialDAGTest() {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.updateNeighborhood(deadlockRightSide);
+        solver.printStage(deadlockRightSide);
+        ShanghaiDAG dag = ShanghaiDAG.getRightSideDAG(deadlockRightSide.get(0));
+        ShanghaiDAG partialDag = dag.partialDag(deadlockRightSide.get(6));
+        solver.printStage(partialDag.getVertexList());
+        assertThat(partialDag.getVertexList().size(), is(6));
+        assertThat(partialDag.getEdgeList().size(), is(6));
+    }
+    @Test
+    public void searchTest() {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.updateNeighborhood(deadlockFloor);
         ShanghaiDAG dag = ShanghaiDAG.getFloorDAG(deadlockFloor.get(0));

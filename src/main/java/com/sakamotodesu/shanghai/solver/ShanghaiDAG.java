@@ -174,4 +174,27 @@ public class ShanghaiDAG {
         return searched;
     }
 
+    /**
+     * DAG刈り込み
+     *
+     * @param toPi   DAG終点
+     * @return 起点から終点に入る辺を持つ頂点だけのDAG
+     */
+    public ShanghaiDAG partialDag(Pi toPi) {
+        ShanghaiDAG partialDag = new ShanghaiDAG();
+        partialDag.addVertex(toPi);
+        partialDagRec(partialDag, toPi);
+        return partialDag;
+    }
+
+    private void partialDagRec(ShanghaiDAG partialDag, Pi toPi) {
+        for (PiPair edge : edgeList) {
+            if (edge.getTo().equals(toPi)) {
+                partialDag.addVertex(edge.getFrom());
+                partialDag.addEdge(edge.getFrom(), edge.getTo());
+                partialDagRec(partialDag, edge.getFrom());
+            }
+        }
+    }
+
 }
