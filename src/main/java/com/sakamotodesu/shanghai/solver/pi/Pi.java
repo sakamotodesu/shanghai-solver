@@ -81,9 +81,14 @@ public interface Pi {
 
     boolean isFree();
 
-    List<Pi> getDeadlockList();
+    List<Pi> getFloorDeadlockList();
 
-    void linkDeadlockPi(Pi pi);
+    void linkFloorDeadlockPi(Pi pi);
+
+
+    List<Pi> getSideDeadlockList();
+
+    void linkSideDeadlockPi(Pi pi);
 
     boolean isExist();
 

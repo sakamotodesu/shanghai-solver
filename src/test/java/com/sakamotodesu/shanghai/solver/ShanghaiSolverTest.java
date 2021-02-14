@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.sakamotodesu.shanghai.solver.pitype.Manzu.eMan;
-import static com.sakamotodesu.shanghai.solver.pitype.Manzu.ryanMan;
+import static com.sakamotodesu.shanghai.solver.pitype.Manzu.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -28,6 +27,7 @@ public class ShanghaiSolverTest {
     List<Pi> normal;
     List<Pi> deadlockFloorCheckmate;
     List<Pi> deadlockRightSideCheckmate;
+    List<Pi> deadlockRightSideThreePiesCheckmate;
 
 
     @Before
@@ -81,6 +81,21 @@ public class ShanghaiSolverTest {
                 new PlacedPi(ryanMan, 0, 8, 0),
                 new PlacedPi(eMan, 0, 10, 0),
                 new PlacedPi(ryanMan, 0, 12, 0)));
+
+        deadlockRightSideThreePiesCheckmate = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
+
+                new PlacedPi(ryanMan, 0, 4, 0),
+                new PlacedPi(ryanMan, 0, 6, 0),
+                new PlacedPi(sanWan, 0, 10, 0),
+                new PlacedPi(sanWan, 0, 12, 0),
+
+                new PlacedPi(eMan, 2, 0, 0),
+                new PlacedPi(ryanMan, 2, 2, 0),
+                new PlacedPi(sanWan, 2, 4, 0),
+                new PlacedPi(eMan, 2, 6, 0),
+                new PlacedPi(ryanMan, 2, 8, 0),
+                new PlacedPi(sanWan, 2, 10, 0),
+                new PlacedPi(eMan, 2, 12, 0)));
 
     }
 
@@ -173,5 +188,12 @@ public class ShanghaiSolverTest {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(deadlockRightSideCheckmate);
         assertThat(solver.solve(deadlockRightSideCheckmate, true), is(true));
+    }
+
+    @Test
+    public void solvedDeadlockRightSideThreePiesTest() throws InvalidLayoutException {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.validate(deadlockRightSideThreePiesCheckmate);
+        assertThat(solver.solve(deadlockRightSideThreePiesCheckmate, true), is(true));
     }
 }

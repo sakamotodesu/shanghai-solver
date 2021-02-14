@@ -203,12 +203,22 @@ public class FreePi implements Pi {
     }
 
     @Override
-    public List<Pi> getDeadlockList() {
+    public List<Pi> getFloorDeadlockList() {
         return null;
     }
 
     @Override
-    public void linkDeadlockPi(Pi pi) {
+    public void linkFloorDeadlockPi(Pi pi) {
+
+    }
+
+    @Override
+    public List<Pi> getSideDeadlockList() {
+        return null;
+    }
+
+    @Override
+    public void linkSideDeadlockPi(Pi pi) {
 
     }
 

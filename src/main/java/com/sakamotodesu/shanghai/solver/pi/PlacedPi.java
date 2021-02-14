@@ -49,8 +49,16 @@ public class PlacedPi implements Pi {
     private Pi onMiddleRight = FreePi.getInstance();
     private Pi onLowerRight = FreePi.getInstance();
 
-    // 詰みペアの相互リンクリスト。1個の牌が重なってたり左右デッドロックだったりすることがあるから1:nになる。重なりと左右デッドロックの区別をする必要はない。
-    private List<Pi> deadlockList = new ArrayList<>();
+    /**
+     * 重なってる牌のロックリスト
+     */
+    private List<Pi> floorDeadlockList = new ArrayList<>();
+
+    /**
+     * 左右でロックになってる牌のリスト。自分以外の牌も置かれる
+     */
+    private List<Pi> sideDeadlockList = new ArrayList<>();
+
 
     public PlacedPi(PiType piType, int i, int j, int k) {
         this.piType = piType;
@@ -106,9 +114,15 @@ public class PlacedPi implements Pi {
     }
 
     @Override
-    public void linkDeadlockPi(Pi pi) {
-        deadlockList.add(pi);
-        pi.getDeadlockList().add(this);
+    public void linkFloorDeadlockPi(Pi pi) {
+        floorDeadlockList.add(pi);
+        pi.getFloorDeadlockList().add(this);
+    }
+
+    @Override
+    public void linkSideDeadlockPi(Pi pi) {
+        sideDeadlockList.add(pi);
+        pi.getSideDeadlockList().add(this);
     }
 
     @Override

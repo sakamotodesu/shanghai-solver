@@ -197,7 +197,7 @@ public final class ShanghaiSolver {
     public void updateDeadlockFloor(List<Pi> piList) {
         for (Pi pi : piList) {
             ShanghaiDAG floorDag = ShanghaiDAG.getFloorDAG(pi);
-            floorDag.search().forEach(pi::linkDeadlockPi);
+            floorDag.search().forEach(pi::linkFloorDeadlockPi);
         }
     }
 
@@ -220,8 +220,10 @@ public final class ShanghaiSolver {
                     ShanghaiDAG samePiRightSideDag = ShanghaiDAG.getRightSideDAG(samePiAsRoot);
                     List<Pi> samePiAsSandList = samePiRightSideDag.getVertexList().stream().filter(ri -> ri.getPiType() == sandPi.getPiType()).collect(Collectors.toList());
                     for (Pi samePiAsSand : samePiAsSandList) {
-                        rootPi.linkDeadlockPi(samePiAsRoot);
-                        sandPi.linkDeadlockPi(samePiAsSand);
+                        rootPi.linkSideDeadlockPi(samePiAsRoot);
+                        rootPi.linkSideDeadlockPi(sandPi);
+                        sandPi.linkSideDeadlockPi(samePiAsSand);
+                        sandPi.linkSideDeadlockPi(samePiAsRoot);
                     }
                 }
             }
@@ -374,6 +376,7 @@ public final class ShanghaiSolver {
      * @return true:詰んだ false:詰んでない
      */
     private boolean isCheckmate(List<Pi> piList, PiPair pair) {
+        // floor lockのチェック
         List<Pi> checkList = new ArrayList<>(piList);
         checkList.remove(pair.getFrom());
         checkList.remove(pair.getTo());
@@ -384,6 +387,22 @@ public final class ShanghaiSolver {
             return false;
         }
         // 残った2個が相互にdeadlockListに入ってたら詰み
-        return restPiList.get(0).getDeadlockList().contains(restPiList.get(1)) && restPiList.get(1).getDeadlockList().contains(restPiList.get(0));
+        if (restPiList.get(0).getFloorDeadlockList().contains(restPiList.get(1)) && restPiList.get(1).getFloorDeadlockList().contains(restPiList.get(0))) {
+            return true;
+        }
+
+        // side lockのチェック
+        // restPiから他のside lock piを探して、そいつらが残り2個になってないかチェックする
+        if (restPiList.get(0).getSideDeadlockList().contains(restPiList.get(1)) && restPiList.get(1).getSideDeadlockList().contains(restPiList.get(0))) {
+            // 削除候補でない牌が詰みになっているか？4個残ってれば詰みではない
+            List<Pi> otherLockPiList = restPiList.get(0).getSideDeadlockList().stream().filter(pi -> pi.getPiType() != pair.getFrom().getPiType()).collect(Collectors.toList());
+            for (Pi otherPi : otherLockPiList) {
+                // 2個しか残ってないなら詰み
+                if (piList.stream().filter(pi -> pi.getPiType() == otherPi.getPiType()).count() == 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
