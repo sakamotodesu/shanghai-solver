@@ -186,21 +186,18 @@ public final class ShanghaiSolver {
     // 小さい問題に分割しよう
 
     public void updateDeadlock(List<Pi> piList) {
-        updateDeadlockOnBlocks(piList);
-        updateDeadlockSideBlocks(piList);
-        updateDeadlockSideBlocksContinuous(piList);
+        updateDeadlockFloor(piList);
+        updateDeadlockRightSide(piList);
+        updateDeadlockRightSideContinuous(piList);
     }
 
     /**
      * @param piList 問題
      */
-    public void updateDeadlockOnBlocks(List<Pi> piList) {
+    public void updateDeadlockFloor(List<Pi> piList) {
         for (Pi pi : piList) {
-            ShanghaiDAG onDag = ShanghaiDAG.getFloorDAG(pi);
-            List<Pi> deadlockList = onDag.search();
-            if (deadlockList.size() != 0) {
-                deadlockList.forEach(pi::linkDeadlockPi);
-            }
+            ShanghaiDAG floorDag = ShanghaiDAG.getFloorDAG(pi);
+            floorDag.search().forEach(pi::linkDeadlockPi);
         }
     }
 
@@ -212,8 +209,24 @@ public final class ShanghaiSolver {
      *
      * @param piList 問題
      */
-    public void updateDeadlockSideBlocks(List<Pi> piList) {
+    public void updateDeadlockRightSide(List<Pi> piList) {
+        for (Pi rootPi : piList) {
+            ShanghaiDAG rightSideDag = ShanghaiDAG.getRightSideDAG(rootPi);
+            List<Pi> samePiList = rightSideDag.search();
+            for (Pi samePiAsRoot : samePiList) {
+                ShanghaiDAG partialDag = rightSideDag.partialDag(samePiAsRoot);
+                List<Pi> sandPiList = partialDag.getVertexList().stream().filter(qi -> qi.getPiType() != samePiAsRoot.getPiType()).collect(Collectors.toList());
+                for (Pi sandPi : sandPiList) {
+                    ShanghaiDAG samePiRightSideDag = ShanghaiDAG.getRightSideDAG(samePiAsRoot);
+                    List<Pi> samePiAsSandList = samePiRightSideDag.getVertexList().stream().filter(ri -> ri.getPiType() == sandPi.getPiType()).collect(Collectors.toList());
+                    for (Pi samePiAsSand : samePiAsSandList) {
+                        rootPi.linkDeadlockPi(samePiAsRoot);
+                        sandPi.linkDeadlockPi(samePiAsSand);
+                    }
+                }
+            }
 
+        }
     }
 
 
@@ -223,7 +236,7 @@ public final class ShanghaiSolver {
      *
      * @param piList 問題
      */
-    public void updateDeadlockSideBlocksContinuous(List<Pi> piList) {
+    public void updateDeadlockRightSideContinuous(List<Pi> piList) {
 
     }
 

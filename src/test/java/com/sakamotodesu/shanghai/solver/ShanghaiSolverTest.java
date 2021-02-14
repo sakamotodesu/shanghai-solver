@@ -27,6 +27,7 @@ public class ShanghaiSolverTest {
     List<Pi> twoFloor;
     List<Pi> normal;
     List<Pi> deadlockFloorCheckmate;
+    List<Pi> deadlockRightSideCheckmate;
 
 
     @Before
@@ -66,10 +67,20 @@ public class ShanghaiSolverTest {
                 new PlacedPi(eMan, 0, 2, 0),
                 new PlacedPi(ryanMan, 2, 0, 0),
                 new PlacedPi(ryanMan, 2, 2, 0),
+
                 new PlacedPi(eMan, 0, 6, 0),
                 new PlacedPi(ryanMan, 1, 5, 1),
                 new PlacedPi(ryanMan, 1, 7, 1),
                 new PlacedPi(eMan, 2, 4, 2)));
+        deadlockRightSideCheckmate = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
+                new PlacedPi(eMan, 0, 2, 0),
+                new PlacedPi(ryanMan, 2, 0, 0),
+                new PlacedPi(ryanMan, 2, 2, 0),
+
+                new PlacedPi(eMan, 0, 6, 0),
+                new PlacedPi(ryanMan, 0, 8, 0),
+                new PlacedPi(eMan, 0, 10, 0),
+                new PlacedPi(ryanMan, 0, 12, 0)));
 
     }
 
@@ -151,10 +162,16 @@ public class ShanghaiSolverTest {
     }
 
     @Test
-    public void solvedDeadlockOnBlocksTest() throws InvalidLayoutException {
+    public void solvedDeadlockFloorTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(deadlockFloorCheckmate);
         assertThat(solver.solve(deadlockFloorCheckmate, true), is(true));
     }
 
+    @Test
+    public void solvedDeadlockRightSideTest() throws InvalidLayoutException {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.validate(deadlockRightSideCheckmate);
+        assertThat(solver.solve(deadlockRightSideCheckmate, true), is(true));
+    }
 }
