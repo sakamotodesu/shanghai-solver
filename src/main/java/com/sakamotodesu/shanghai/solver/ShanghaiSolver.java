@@ -289,7 +289,7 @@ public final class ShanghaiSolver {
             logger.info("solved.");
             return true;//解けた
         }
-
+        logger.info(solvedList.toString());
         if (logger.isDebugEnabled()) {
             printStage(piList);
         }
@@ -407,6 +407,65 @@ public final class ShanghaiSolver {
                 }
             }
         }
+        return false;
+    }
+
+    // 幅優先探索
+    // 幅優先で探索して、牌を取った後に同じ盤面になるパターンをマージする
+    // 　その後１段下げて探索する
+    // 　　
+    public boolean solveByBreadth(List<Pi> piList, List<List<Pi>> candidateAnswerList) {
+        if (piList.size() == 0) {
+            logger.info("solved.");
+            return true;//解けた
+        }
+        updateNeighborhood(piList);
+
+        // 4個とれるときは優先してとる
+        Map<PiType, List<Pi>> piMap = new HashMap<>();
+        piList.stream().filter(Pi::isRemoval).forEach(pi -> {
+            if (!piMap.containsKey(pi.getPiType())) {
+                piMap.put(pi.getPiType(), new ArrayList<>());
+            }
+            piMap.get(pi.getPiType()).add(pi);
+        });
+
+
+        // 4個セットは特別扱いして根こそぎとる
+        List<Pi> removedFourPies = new ArrayList<>();
+        piMap.entrySet().stream()
+                .filter(e -> e.getValue().size() == 4)
+                .forEach(e -> removedFourPies.addAll(e.getValue()));
+        if (removedFourPies.size() != 0) {
+            candidateAnswerList.forEach(list -> list.addAll(removedFourPies));
+            List<Pi> undergroundPiList = new ArrayList<>(piList);
+            undergroundPiList.removeAll(removedFourPies);
+            logger.debug("removed:" + removedFourPies);
+            solveByBreadth(undergroundPiList, candidateAnswerList);
+        }
+
+        // 2個とるパターンを網羅
+        List<PiPair> piPairList = new ArrayList<>();
+        for (Map.Entry<PiType, List<Pi>> entry : piMap.entrySet()) {
+            if (entry.getValue().size() == 2) {
+                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+            } else if (entry.getValue().size() == 3) {
+                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(2)));
+                piPairList.add(new PiPair(entry.getValue().get(1), entry.getValue().get(2)));
+            }
+        }
+        // 2個取った結果あとcandidate answerが順不動で同じになるやつを探す
+        List<List<Pi>> preCandidateAnswerList = new ArrayList<>();
+        candidateAnswerList.forEach(list -> piPairList.forEach(pair ->{
+            List<Pi> newCandidateList = new ArrayList<>(list);
+            newCandidateList.addAll(pair.toList());
+            preCandidateAnswerList.add(newCandidateList);
+        }));
+        //整理が終わったら削除して進む
+        // 詰みだったらcandidateから削除？
+
+        logger.debug("unsolved.");
         return false;
     }
 }
