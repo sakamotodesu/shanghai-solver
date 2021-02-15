@@ -173,27 +173,27 @@ public class ShanghaiSolverTest {
     public void solvedNormalTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(normal);
-        assertThat(solver.solve(normal, true), is(true));
+        assertThat(solver.solve(normal), is(true));
     }
 
     @Test
     public void solvedDeadlockFloorTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(deadlockFloorCheckmate);
-        assertThat(solver.solve(deadlockFloorCheckmate, true), is(true));
+        assertThat(solver.solve(deadlockFloorCheckmate), is(true));
     }
 
     @Test
     public void solvedDeadlockRightSideTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(deadlockRightSideCheckmate);
-        assertThat(solver.solve(deadlockRightSideCheckmate, true), is(true));
+        assertThat(solver.solve(deadlockRightSideCheckmate), is(true));
     }
 
     @Test
     public void solvedDeadlockRightSideThreePiesTest() throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(deadlockRightSideThreePiesCheckmate);
-        assertThat(solver.solve(deadlockRightSideThreePiesCheckmate, true), is(true));
+        assertThat(solver.solve(deadlockRightSideThreePiesCheckmate), is(true));
     }
 }

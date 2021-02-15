@@ -2,15 +2,17 @@ package com.sakamotodesu.shanghai.solver;
 
 import com.sakamotodesu.shanghai.solver.pi.Pi;
 import com.sakamotodesu.shanghai.solver.pitype.PiType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public final class ShanghaiSolver {
 
-    // TODO logger
 
     public static long unsolvedCount = 0;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public void validate(List<Pi> piList) throws InvalidLayoutException {
 
@@ -147,10 +149,7 @@ public final class ShanghaiSolver {
             }
         }
         for (char[] printLayoutLine : printLayout) {
-            for (char printChar : printLayoutLine) {
-                System.out.print(printChar);
-            }
-            System.out.println();
+            logger.debug(String.valueOf(printLayoutLine));
         }
     }
 
@@ -175,6 +174,7 @@ public final class ShanghaiSolver {
     // 　そのため、DAGの中で起点牌と同じ牌を見つける作業が必要になる。
     // 　重なりの調査ならDAGの中に起点と同じ牌を見つけた時点で相互リンクにして終了するが、左右の調査はその起点と終点の間にある牌を調べる必要がある。
     // 　終点からさらにその先にDAGを構築し、起点・終点の間にある牌がそのDAGの中に存在すれば1212のパターンになっている。
+    // TODO 重なり詰みパターンで1の上に2、2の上に1というパターンもあった。重なりと左右それぞれ類似のロックがありそう
 
 
     // 詰みパターン調査の実装
@@ -243,15 +243,11 @@ public final class ShanghaiSolver {
     }
 
     public boolean solve(List<Pi> piList) {
-        return solve(piList, false);
-    }
-
-    public boolean solve(List<Pi> piList, boolean debug) {
         List<Pi> solvedList = new ArrayList<>();
         updateNeighborhood(piList);
         updateDeadlock(piList);
-        boolean ret = solve(piList, solvedList, 0, debug);
-        System.out.println(solvedList);
+        boolean ret = solve(piList, solvedList, 0);
+        logger.info(solvedList.toString());
         return ret;
     }
 
@@ -279,26 +275,22 @@ public final class ShanghaiSolver {
     // 　深さ優先で探索してるけど幅優先でやった方がいい？牌を取る順番が前後しても結果が同じになるのを刈り取る？
 
 
-
-
     // 完全情報であることを利用して賢く解きたい
-
 
 
     /**
      * @param piList        問題
      * @param solvedList    解答
      * @param rollbackCount 解答を巻き戻す牌の数
-     * @param debug         true:詳細プリント
      * @return true:解けた false:詰んだ
      */
-    public boolean solve(List<Pi> piList, List<Pi> solvedList, int rollbackCount, boolean debug) {
+    public boolean solve(List<Pi> piList, List<Pi> solvedList, int rollbackCount) {
         if (piList.size() == 0) {
-            System.out.println("solved.");
+            logger.info("solved.");
             return true;//解けた
         }
 
-        if (debug) {
+        if (logger.isDebugEnabled()) {
             printStage(piList);
         }
 
@@ -326,14 +318,12 @@ public final class ShanghaiSolver {
                 solvedList.addAll(entry.getValue());
                 piTowMap.remove(entry.getKey());
                 removedCount += 4;
-                if (debug) {
-                    System.out.println("removed:" + entry.getValue());
-                }
+                logger.debug("removed:" + entry.getValue());
             }
         }
         // 4個セットで取ったら再度アップデートしたい
         if (removedCount != 0) {
-            if (solve(removedList, solvedList, removedCount, debug)) {
+            if (solve(removedList, solvedList, removedCount)) {
                 return true;
             }
         }
@@ -353,9 +343,7 @@ public final class ShanghaiSolver {
         for (PiPair pair : piPairList) {
             // pairを取ったら詰むならスキップ
             if (isCheckmate(piList, pair)) {
-                if (debug) {
-                    System.out.println("checkmate:" + pair);
-                }
+                logger.debug("checkmate:" + pair);
                 continue;
             }
             List<Pi> recRemovedList = new ArrayList<>(piList);
@@ -364,21 +352,17 @@ public final class ShanghaiSolver {
             solvedList.add(pair.getFrom());
             solvedList.add(pair.getTo());
             removedCount += 2;
-            if (debug) {
-                System.out.println("removed:" + pair.getFrom());
-                System.out.println("removed:" + pair.getTo());
-            }
-            if (solve(recRemovedList, solvedList, removedCount, debug)) {
+            logger.debug("removed:" + pair.getFrom());
+            logger.debug("removed:" + pair.getTo());
+            if (solve(recRemovedList, solvedList, removedCount)) {
                 return true;
             }
         }
 
         unsolvedCount++;
-        if (debug) {
-            System.out.println("unsolved.");
-        }
+        logger.debug("unsolved.");
         if (unsolvedCount % 1000 == 0) {
-            System.out.println(unsolvedCount);
+            logger.info(String.valueOf(unsolvedCount));
         }
         if (solvedList.size() >= rollbackCount) {
             for (int i = 0; i < rollbackCount; i++) {

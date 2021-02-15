@@ -6,7 +6,7 @@ package com.sakamotodesu.shanghai.solver;
 public class App {
     public static void main(String[] args) {
         ShanghaiSolver solver = new ShanghaiSolver();
-        solver.solve(StageData.getNormal(), true);
+        solver.solve(StageData.getNormal());
     }
 
     public String getGreeting() {
