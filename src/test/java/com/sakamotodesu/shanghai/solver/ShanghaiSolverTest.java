@@ -5,9 +5,7 @@ import com.sakamotodesu.shanghai.solver.pi.PlacedPi;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static com.sakamotodesu.shanghai.solver.pitype.Manzu.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -195,5 +193,52 @@ public class ShanghaiSolverTest {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.validate(deadlockRightSideThreePiesCheckmate);
         assertThat(solver.solve(deadlockRightSideThreePiesCheckmate), is(true));
+    }
+
+    @Test
+    public void solvedBreadthNormalTest() throws InvalidLayoutException {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.validate(normal);
+        assertThat(solver.solveByBreadth(normal), is(true));
+    }
+
+    @Test
+    public void equalsListTest() {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        assertThat(solver.equalList(
+                new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0))),
+                new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0)))),
+                is(true));
+
+        assertThat(solver.equalList(
+                new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0))),
+                new ArrayList<>(Arrays.asList(new PlacedPi(ryanMan, 2, 0, 0), new PlacedPi(ryanMan, 2, 2, 0)))),
+                is(false));
+
+        assertThat(solver.equalList(
+                new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0), new PlacedPi(ryanMan, 2, 0, 0), new PlacedPi(ryanMan, 2, 2, 0))),
+                new ArrayList<>(Arrays.asList(new PlacedPi(ryanMan, 2, 0, 0), new PlacedPi(ryanMan, 2, 2, 0), new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0)))),
+                is(true));
+    }
+
+    @Test
+    public void hashSetTest() {
+        Set<Pi> piSet = new HashSet<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0)));
+        Set<Pi> qiSet = new HashSet<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0)));
+        assertThat(piSet.equals(qiSet), is(true));
+
+        piSet = new HashSet<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0)));
+        qiSet = new HashSet<>(Arrays.asList(new PlacedPi(eMan, 0, 2, 0), new PlacedPi(eMan, 0, 0, 0)));
+        assertThat(piSet.equals(qiSet), is(true));
+
+        piSet = new HashSet<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(ryanMan, 0, 2, 0)));
+        qiSet = new HashSet<>(Arrays.asList(new PlacedPi(eMan, 0, 2, 0), new PlacedPi(eMan, 0, 0, 0)));
+        assertThat(piSet.equals(qiSet), is(false));
+
+        piSet = new HashSet<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0), new PlacedPi(eMan, 0, 2, 0), new PlacedPi(eMan, 0, 2, 0)));
+        qiSet = new HashSet<>(Arrays.asList(new PlacedPi(eMan, 0, 2, 0), new PlacedPi(eMan, 0, 0, 0)));
+        assertThat(piSet.equals(qiSet), is(true));
+
+
     }
 }

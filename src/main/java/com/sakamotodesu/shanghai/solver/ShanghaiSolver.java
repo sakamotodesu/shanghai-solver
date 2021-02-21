@@ -372,6 +372,12 @@ public final class ShanghaiSolver {
         return false;
     }
 
+    private boolean isCheckmate(List<Pi> candidateList, List<Pi> piList, PiPair pair) {
+        List<Pi> list = new ArrayList<>(piList);
+        list.removeAll(candidateList);
+        return isCheckmate(list, pair);
+    }
+
     /**
      * 牌をとったら詰むかチェック
      *
@@ -414,58 +420,118 @@ public final class ShanghaiSolver {
     // 幅優先で探索して、牌を取った後に同じ盤面になるパターンをマージする
     // 　その後１段下げて探索する
     // 　　
-    public boolean solveByBreadth(List<Pi> piList, List<List<Pi>> candidateAnswerList) {
-        if (piList.size() == 0) {
+
+    public boolean solveByBreadth(List<Pi> piList) {
+        List<CandidateAnswer> candidateAnswerList = new ArrayList<>();
+        candidateAnswerList.add(new CandidateAnswer(new ArrayList<>(), new HashSet<>()));
+        return solveByBreadth(piList, candidateAnswerList);
+    }
+
+    /**
+     * 幅優先。探索中の解答候補+取れる牌の配列を育てていく
+     *
+     * @param piList              問題。初期データのまま減らない
+     * @param candidateAnswerList 探索中の解答候補
+     * @return true:とけた
+     */
+    public boolean solveByBreadth(List<Pi> piList, List<CandidateAnswer> candidateAnswerList) {
+        if (candidateAnswerList.stream().anyMatch(candidateAnswer -> candidateAnswer.getCandidateAnswerList().size() == piList.size())) {
             logger.info("solved.");
+            logger.info(candidateAnswerList.get(0).getCandidateAnswerList().toString());
             return true;//解けた
         }
-        updateNeighborhood(piList);
 
-        // 4個とれるときは優先してとる
-        Map<PiType, List<Pi>> piMap = new HashMap<>();
-        piList.stream().filter(Pi::isRemoval).forEach(pi -> {
-            if (!piMap.containsKey(pi.getPiType())) {
-                piMap.put(pi.getPiType(), new ArrayList<>());
+        List<CandidateAnswer> fatCandidateAnswerList = new ArrayList<>();
+        candidateAnswerList.forEach(candidateAnswer -> {
+
+            List<Pi> targetList = new ArrayList<>(piList);
+            targetList.removeAll(candidateAnswer.getCandidateAnswerList());
+            updateNeighborhood(targetList);
+
+            // 4個とれるときは優先してとる
+            Map<PiType, List<Pi>> piMap = new HashMap<>();
+            targetList.stream().filter(Pi::isRemoval).forEach(pi -> {
+                if (!piMap.containsKey(pi.getPiType())) {
+                    piMap.put(pi.getPiType(), new ArrayList<>());
+                }
+                piMap.get(pi.getPiType()).add(pi);
+            });
+
+            // 4個セットは特別扱いして根こそぎとる
+            List<Pi> removedFourPies = new ArrayList<>();
+            piMap.entrySet().stream()
+                    .filter(e -> e.getValue().size() == 4)
+                    .forEach(e -> removedFourPies.addAll(e.getValue()));
+            if (removedFourPies.size() != 0) {
+                candidateAnswer.addAll(removedFourPies);
+                CandidateAnswer newCandidateAnswer = new CandidateAnswer(new ArrayList<>(candidateAnswer.getCandidateAnswerList()), new HashSet<>(candidateAnswer.getCandidateAnswerSet()));
+                fatCandidateAnswerList.add(newCandidateAnswer);
+                logger.debug("removed:" + removedFourPies);
+            } else {
+
+                // 2個とるパターンを網羅
+                List<PiPair> piPairList = new ArrayList<>();
+                for (Map.Entry<PiType, List<Pi>> entry : piMap.entrySet()) {
+                    if (entry.getValue().size() == 2) {
+                        piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+                    } else if (entry.getValue().size() == 3) {
+                        piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+                        piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(2)));
+                        piPairList.add(new PiPair(entry.getValue().get(1), entry.getValue().get(2)));
+                    }
+                }
+                piPairList.stream().filter(p -> !isCheckmate(candidateAnswer.getCandidateAnswerList(), piList, p)).forEach(pair -> {
+                    CandidateAnswer newCandidateAnswer = new CandidateAnswer(new ArrayList<>(candidateAnswer.getCandidateAnswerList()), new HashSet<>(candidateAnswer.getCandidateAnswerSet()));
+                    newCandidateAnswer.addAll(pair.toList());
+                    fatCandidateAnswerList.add(newCandidateAnswer);
+
+                });
             }
-            piMap.get(pi.getPiType()).add(pi);
         });
 
-
-        // 4個セットは特別扱いして根こそぎとる
-        List<Pi> removedFourPies = new ArrayList<>();
-        piMap.entrySet().stream()
-                .filter(e -> e.getValue().size() == 4)
-                .forEach(e -> removedFourPies.addAll(e.getValue()));
-        if (removedFourPies.size() != 0) {
-            candidateAnswerList.forEach(list -> list.addAll(removedFourPies));
-            List<Pi> undergroundPiList = new ArrayList<>(piList);
-            undergroundPiList.removeAll(removedFourPies);
-            logger.debug("removed:" + removedFourPies);
-            solveByBreadth(undergroundPiList, candidateAnswerList);
+        // fatをダイエット
+        List<CandidateAnswer> nextCandidateAnswerList = new ArrayList<>();
+        fatCandidateAnswerList.forEach(fatList -> {
+            if (nextCandidateAnswerList.stream().noneMatch(nextList -> equalsCandidateAnswer(fatList, nextList))) {
+                nextCandidateAnswerList.add(fatList);
+            }
+        });
+        logger.info("diet:" + fatCandidateAnswerList.size() + "->" + nextCandidateAnswerList.size());
+        if (nextCandidateAnswerList.size() == 0) {
+            logger.debug("unsolved");
+            return false;
+        } else {
+            return solveByBreadth(piList, nextCandidateAnswerList);
         }
+    }
 
-        // 2個とるパターンを網羅
-        List<PiPair> piPairList = new ArrayList<>();
-        for (Map.Entry<PiType, List<Pi>> entry : piMap.entrySet()) {
-            if (entry.getValue().size() == 2) {
-                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
-            } else if (entry.getValue().size() == 3) {
-                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
-                piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(2)));
-                piPairList.add(new PiPair(entry.getValue().get(1), entry.getValue().get(2)));
+    public boolean equalsCandidateAnswer(CandidateAnswer candidateAnswer, CandidateAnswer candidateAnswer2) {
+        return candidateAnswer.getCandidateAnswerSet().equals(candidateAnswer2.getCandidateAnswerSet());
+    }
+    //
+
+    /**
+     * 順不動で中身が一致してたらtrue
+     *
+     * @param piList 牌列
+     * @param qiList 牌列
+     * @return 順不動で中身が一致してたらtrue
+     */
+    public boolean equalList(List<Pi> piList, List<Pi> qiList) {
+        if (piList.size() != qiList.size()) {
+            return false;
+        }
+        List<Pi> piSortedList = sortList(piList);
+        List<Pi> qiSortedList = sortList(qiList);
+        for (int i = 0; i < piList.size(); i++) {
+            if (!piSortedList.get(i).equals(qiSortedList.get(i))) {
+                return false;
             }
         }
-        // 2個取った結果あとcandidate answerが順不動で同じになるやつを探す
-        List<List<Pi>> preCandidateAnswerList = new ArrayList<>();
-        candidateAnswerList.forEach(list -> piPairList.forEach(pair ->{
-            List<Pi> newCandidateList = new ArrayList<>(list);
-            newCandidateList.addAll(pair.toList());
-            preCandidateAnswerList.add(newCandidateList);
-        }));
-        //整理が終わったら削除して進む
-        // 詰みだったらcandidateから削除？
+        return true;
+    }
 
-        logger.debug("unsolved.");
-        return false;
+    private List<Pi> sortList(List<Pi> piList) {
+        return piList.stream().sorted(Comparator.comparing(Pi::toString)).collect(Collectors.toList());
     }
 }

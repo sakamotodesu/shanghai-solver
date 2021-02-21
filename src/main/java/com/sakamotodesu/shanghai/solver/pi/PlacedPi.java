@@ -49,6 +49,9 @@ public class PlacedPi implements Pi {
     private Pi onMiddleRight = FreePi.getInstance();
     private Pi onLowerRight = FreePi.getInstance();
 
+    // toString高速化
+    private String toString;
+
     /**
      * 重なってる牌のロックリスト
      */
@@ -65,11 +68,12 @@ public class PlacedPi implements Pi {
         this.i = i;
         this.j = j;
         this.k = k;
+        this.toString = i + ":" + j + ":" + k + ":" + piType.toString();
     }
 
     @Override
     public String toString() {
-        return i + ":" + j + ":" + k + ":" + piType.toString();
+        return this.toString;
     }
 
     @Override
