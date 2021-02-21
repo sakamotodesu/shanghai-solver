@@ -184,6 +184,10 @@ public final class ShanghaiSolver {
 
 
     // 小さい問題に分割しよう
+    // 動的計画法むいてなさそう
+    // 　途中の経路全部覚えてなきゃいけないから計算結果の再利用とかないんだよね
+    // 　再起するにしてもすでに解いた問題に出会うことはないし
+    // 　問題を分割する方法もない
 
     public void updateDeadlock(List<Pi> piList) {
         updateDeadlockFloor(piList);
@@ -276,6 +280,11 @@ public final class ShanghaiSolver {
 
 
     // 完全情報であることを利用して賢く解きたい
+    // 　1人有限確定完全情報ゲームらしい
+    // 　　牌を取る度に局面が進み、局面を頂点としたDAGになる
+    // 　　　解析済みの局面をメモする？動的計画法使える？
+    // 　　　　後退解析？
+    // 　　　勝敗が決している場面から出発して、後ろから遡るように探索する
 
 
     /**
@@ -421,36 +430,33 @@ public final class ShanghaiSolver {
     // 　その後１段下げて探索する
     // 　　
 
-    public boolean solveByBreadth(List<Pi> piList) {
+    public boolean solveByBreadthStart(List<Pi> piList) {
         List<CandidateAnswer> candidateAnswerList = new ArrayList<>();
-        candidateAnswerList.add(new CandidateAnswer(new ArrayList<>(), new HashSet<>()));
-        return solveByBreadth(piList, candidateAnswerList);
+        candidateAnswerList.add(new CandidateAnswer(new ArrayList<>(), piList));
+        return solveByBreadth(candidateAnswerList);
     }
 
     /**
      * 幅優先。探索中の解答候補+取れる牌の配列を育てていく
      *
-     * @param piList              問題。初期データのまま減らない
      * @param candidateAnswerList 探索中の解答候補
      * @return true:とけた
      */
-    public boolean solveByBreadth(List<Pi> piList, List<CandidateAnswer> candidateAnswerList) {
-        if (candidateAnswerList.stream().anyMatch(candidateAnswer -> candidateAnswer.getCandidateAnswerList().size() == piList.size())) {
+    public boolean solveByBreadth(List<CandidateAnswer> candidateAnswerList) {
+        if (candidateAnswerList.stream().anyMatch(candidateAnswer -> candidateAnswer.getAnalysysPiList().size() == 0)) {
             logger.info("solved.");
-            logger.info(candidateAnswerList.get(0).getCandidateAnswerList().toString());
+            logger.info(candidateAnswerList.stream().filter(c -> c.getAnalysysPiList().size() == 0).collect(Collectors.toList()).get(0).getCandidateAnswerList().toString());
             return true;//解けた
         }
 
         List<CandidateAnswer> fatCandidateAnswerList = new ArrayList<>();
         candidateAnswerList.forEach(candidateAnswer -> {
 
-            List<Pi> targetList = new ArrayList<>(piList);
-            targetList.removeAll(candidateAnswer.getCandidateAnswerList());
-            updateNeighborhood(targetList);
+            updateNeighborhood(candidateAnswer.getAnalysysPiList());
 
             // 4個とれるときは優先してとる
             Map<PiType, List<Pi>> piMap = new HashMap<>();
-            targetList.stream().filter(Pi::isRemoval).forEach(pi -> {
+            candidateAnswer.getAnalysysPiList().stream().filter(Pi::isRemoval).forEach(pi -> {
                 if (!piMap.containsKey(pi.getPiType())) {
                     piMap.put(pi.getPiType(), new ArrayList<>());
                 }
@@ -464,7 +470,7 @@ public final class ShanghaiSolver {
                     .forEach(e -> removedFourPies.addAll(e.getValue()));
             if (removedFourPies.size() != 0) {
                 candidateAnswer.addAll(removedFourPies);
-                CandidateAnswer newCandidateAnswer = new CandidateAnswer(new ArrayList<>(candidateAnswer.getCandidateAnswerList()), new HashSet<>(candidateAnswer.getCandidateAnswerSet()));
+                CandidateAnswer newCandidateAnswer = new CandidateAnswer(candidateAnswer);
                 fatCandidateAnswerList.add(newCandidateAnswer);
                 logger.debug("removed:" + removedFourPies);
             } else {
@@ -480,11 +486,11 @@ public final class ShanghaiSolver {
                         piPairList.add(new PiPair(entry.getValue().get(1), entry.getValue().get(2)));
                     }
                 }
-                piPairList.stream().filter(p -> !isCheckmate(candidateAnswer.getCandidateAnswerList(), piList, p)).forEach(pair -> {
-                    CandidateAnswer newCandidateAnswer = new CandidateAnswer(new ArrayList<>(candidateAnswer.getCandidateAnswerList()), new HashSet<>(candidateAnswer.getCandidateAnswerSet()));
+
+                piPairList.stream().filter(p -> !isCheckmate(candidateAnswer.getCandidateAnswerList(), candidateAnswer.getAnalysysPiList(), p)).forEach(pair -> {
+                    CandidateAnswer newCandidateAnswer = new CandidateAnswer(candidateAnswer);
                     newCandidateAnswer.addAll(pair.toList());
                     fatCandidateAnswerList.add(newCandidateAnswer);
-
                 });
             }
         });
@@ -501,37 +507,12 @@ public final class ShanghaiSolver {
             logger.debug("unsolved");
             return false;
         } else {
-            return solveByBreadth(piList, nextCandidateAnswerList);
+            return solveByBreadth(nextCandidateAnswerList);
         }
     }
 
     public boolean equalsCandidateAnswer(CandidateAnswer candidateAnswer, CandidateAnswer candidateAnswer2) {
-        return candidateAnswer.getCandidateAnswerSet().equals(candidateAnswer2.getCandidateAnswerSet());
-    }
-    //
-
-    /**
-     * 順不動で中身が一致してたらtrue
-     *
-     * @param piList 牌列
-     * @param qiList 牌列
-     * @return 順不動で中身が一致してたらtrue
-     */
-    public boolean equalList(List<Pi> piList, List<Pi> qiList) {
-        if (piList.size() != qiList.size()) {
-            return false;
-        }
-        List<Pi> piSortedList = sortList(piList);
-        List<Pi> qiSortedList = sortList(qiList);
-        for (int i = 0; i < piList.size(); i++) {
-            if (!piSortedList.get(i).equals(qiSortedList.get(i))) {
-                return false;
-            }
-        }
-        return true;
+        return candidateAnswer.getAnalysysPiList().equals(candidateAnswer2.getAnalysysPiList());
     }
 
-    private List<Pi> sortList(List<Pi> piList) {
-        return piList.stream().sorted(Comparator.comparing(Pi::toString)).collect(Collectors.toList());
-    }
 }
