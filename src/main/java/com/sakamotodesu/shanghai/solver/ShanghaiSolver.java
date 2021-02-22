@@ -189,6 +189,22 @@ public final class ShanghaiSolver {
     // 　再起するにしてもすでに解いた問題に出会うことはないし
     // 　問題を分割する方法もない
 
+    // 改めて問題の性質分析
+    //   探索問題
+    // 　　局面を頂点、取った牌を辺にして初期値->牌ゼロのDAGができる
+    // 　　　ただこのDAGをそもそも作るのが大変という問題なので探索すべき
+    // 　　探索する空間
+    // 　　　ゴールまでのステップ数は最短・最長ともに牌の数/2
+    // 　　　　局面ごとに取れる辺のパターンは1-10くらいまで変化する。10ってのは適当な数字。
+    // 　　　　　108牌で選択肢を2とすると2^54で1京ぐらい。これは総当たりすべき数字ではない。
+    // 　　探索戦略
+    // 　　　同じ局面からの再探索はしない
+    // 　　　詰みパターンからの逆算により探索不要なルートを刈り取る
+    // 　　　評価値みたいな仕組みで優先探索したい
+    // 　　　　詰みパターンを優先的に潰したり、詰みパターンの牌に近くルートを優先的に試したりしたい
+    // 　　　　　深さ優先で掘り下げ、情報集まったら手前から再分岐する？
+    // 　　　　　　実際上海をプレイする時もそんな感じ。詰みを見つけたら解消を優先し、詰みにくいようにプレイし、
+
     public void updateDeadlock(List<Pi> piList) {
         updateDeadlockFloor(piList);
         updateDeadlockRightSide(piList);
@@ -285,6 +301,12 @@ public final class ShanghaiSolver {
     // 　　　解析済みの局面をメモする？動的計画法使える？
     // 　　　　後退解析？
     // 　　　勝敗が決している場面から出発して、後ろから遡るように探索する
+    // 　評価関数の出番？
+    // 　小さい問題から解析してみるか
+    // 　　解析ってなんだ？
+    // 　　　想定より難しい問題に手を出してしまったらしい
+    // TODO ローカル環境以外でも放置して動かせるようにする
+
 
 
     /**
@@ -496,6 +518,7 @@ public final class ShanghaiSolver {
         });
 
         // fatをダイエット
+        // TODO 4個を根こそぎ取るロジックのせいでダイエットうまく行ってないよねえ。4個とった場合と取らない場合の分岐があるならリストの長さ変わるよね。とはいえ4個ロジックをやめると計算量えぐくてnormalもとけない
         List<CandidateAnswer> nextCandidateAnswerList = new ArrayList<>();
         fatCandidateAnswerList.forEach(fatList -> {
             if (nextCandidateAnswerList.stream().noneMatch(nextList -> equalsCandidateAnswer(fatList, nextList))) {
