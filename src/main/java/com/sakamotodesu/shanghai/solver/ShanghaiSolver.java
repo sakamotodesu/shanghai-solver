@@ -3,6 +3,8 @@ package com.sakamotodesu.shanghai.solver;
 import com.sakamotodesu.shanghai.solver.pi.Pi;
 import com.sakamotodesu.shanghai.solver.pitype.PiType;
 import org.jgrapht.Graph;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.slf4j.Logger;
@@ -557,8 +559,8 @@ public final class ShanghaiSolver {
             targetVertexList.forEach(targetVertex -> {
                 if (targetVertex.size() == 0) {
                     solved.set(true);
-                    // TODO 解答出力
                     logger.info("solved");
+                    printAnswer(graph, piList, targetVertex);
                 }
                 updateNeighborhood(targetVertex);
 
@@ -609,6 +611,13 @@ public final class ShanghaiSolver {
         return piMap;
     }
 
+    /**
+     * 重複チェックしつつ頂点を追加
+     *
+     * @param graph         解答探索グラフ
+     * @param targetVertex  辺の出発点
+     * @param removalPiList 取り除く牌
+     */
     private void addVertex(Graph<List<Pi>, DefaultEdge> graph, List<Pi> targetVertex, List<Pi> removalPiList) {
         List<Pi> nextVertex = new ArrayList<>(targetVertex);
         nextVertex.removeAll(removalPiList);
@@ -616,5 +625,22 @@ public final class ShanghaiSolver {
             graph.addVertex(nextVertex);
         }
         graph.addEdge(targetVertex, nextVertex);
+    }
+
+    private void printAnswer(Graph<List<Pi>, DefaultEdge> graph, List<Pi> startVertex, List<Pi> endVertex) {
+        DijkstraShortestPath<List<Pi>, DefaultEdge> dijkstraAlg =
+                new DijkstraShortestPath<>(graph);
+        ShortestPathAlgorithm.SingleSourcePaths<List<Pi>, DefaultEdge> iPaths = dijkstraAlg.getPaths(startVertex);
+        List<List<Pi>> a = iPaths.getPath(endVertex).getVertexList();
+        List<Pi> preList = startVertex;
+        for(List < Pi > currentList :a){
+            if (!preList.equals(currentList)) {
+                List<Pi> answer = new ArrayList<>(preList);
+                answer.removeAll(currentList);
+                logger.info(answer.toString());
+                preList = currentList;
+            }
+        }
+
     }
 }
