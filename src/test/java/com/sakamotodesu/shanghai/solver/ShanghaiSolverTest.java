@@ -5,7 +5,9 @@ import com.sakamotodesu.shanghai.solver.pi.PlacedPi;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.sakamotodesu.shanghai.solver.pitype.Manzu.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -202,4 +204,10 @@ public class ShanghaiSolverTest {
         assertThat(solver.solveByBreadthStart(normal), is(true));
     }
 
+    @Test
+    public void solvedByGraphTest() throws InvalidLayoutException {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.validate(normal);
+        assertThat(solver.solverByGraph(normal), is(true));
+    }
 }

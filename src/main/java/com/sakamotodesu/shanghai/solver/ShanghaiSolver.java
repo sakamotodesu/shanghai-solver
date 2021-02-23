@@ -2,10 +2,14 @@ package com.sakamotodesu.shanghai.solver;
 
 import com.sakamotodesu.shanghai.solver.pi.Pi;
 import com.sakamotodesu.shanghai.solver.pitype.PiType;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public final class ShanghaiSolver {
@@ -308,7 +312,6 @@ public final class ShanghaiSolver {
     // TODO ローカル環境以外でも放置して動かせるようにする
 
 
-
     /**
      * @param piList        問題
      * @param solvedList    解答
@@ -331,15 +334,7 @@ public final class ShanghaiSolver {
 
         // 4個とれるときは優先してとる
         // TODO Unsolvedだったルートを再計算しない
-        Map<PiType, List<Pi>> piMap = new HashMap<>();
-        for (Pi pi : piList) {
-            if (pi.isRemoval()) {
-                if (!piMap.containsKey(pi.getPiType())) {
-                    piMap.put(pi.getPiType(), new ArrayList<>());
-                }
-                piMap.get(pi.getPiType()).add(pi);
-            }
-        }
+        Map<PiType, List<Pi>> piMap = getRemovablePiMap(piList);
         Map<PiType, List<Pi>> piTowMap = new HashMap<>(piMap);
         List<Pi> removedList = new ArrayList<>(piList);
         // 4個セットは特別扱いして根こそぎとる
@@ -477,19 +472,13 @@ public final class ShanghaiSolver {
             updateNeighborhood(candidateAnswer.getAnalysysPiList());
 
             // 4個とれるときは優先してとる
-            Map<PiType, List<Pi>> piMap = new HashMap<>();
-            candidateAnswer.getAnalysysPiList().stream().filter(Pi::isRemoval).forEach(pi -> {
-                if (!piMap.containsKey(pi.getPiType())) {
-                    piMap.put(pi.getPiType(), new ArrayList<>());
-                }
-                piMap.get(pi.getPiType()).add(pi);
-            });
+            Map<PiType, List<Pi>> piMap = getRemovablePiMap(candidateAnswer.getAnalysysPiList());
 
             // 4個セットは特別扱いして根こそぎとる
-            List<Pi> removedFourPies = new ArrayList<>();
-            piMap.entrySet().stream()
+            List<Pi> removedFourPies = piMap.entrySet().stream()
                     .filter(e -> e.getValue().size() == 4)
-                    .forEach(e -> removedFourPies.addAll(e.getValue()));
+                    .flatMap(e -> e.getValue().stream())
+                    .collect(Collectors.toList());
             if (removedFourPies.size() != 0) {
                 candidateAnswer.addAll(removedFourPies);
                 CandidateAnswer newCandidateAnswer = new CandidateAnswer(candidateAnswer);
@@ -538,4 +527,94 @@ public final class ShanghaiSolver {
         return candidateAnswer.getAnalysysPiList().equals(candidateAnswer2.getAnalysysPiList());
     }
 
+    // DAG生成＋探索
+    //   局面を頂点、取った牌を辺とする
+    // 　　whileで回す
+    // 　　　初期状態からスタートし取得可能な牌のパターンだけ分岐する
+    // 　　　　詰みパターンを作成する分岐は刈り取る
+    // 　　　　新しい頂点一覧ができる
+    // 　　　　　すでに分岐済みの局面に帰着したらそこで終わり
+    // 　　　　　　未探索(未分岐)の頂点かどうか判定する
+    // 　　　　　　　jgraphでいけるかなあ。同一頂点の判定、出ていく辺を持っているかの判定とか？
+
+    public boolean solverByGraph(List<Pi> piList) {
+
+        Graph<List<Pi>, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+        AtomicBoolean solved = new AtomicBoolean(false);
+        int floor = 0;
+        graph.addVertex(piList);
+
+        while (!solved.get()) {
+            // graphから行き先がない頂点を取る
+            List<List<Pi>> targetVertexList = graph.edgeSet().stream().map(graph::getEdgeTarget).collect(Collectors.toList());
+            if (targetVertexList.size() == 0) {
+                targetVertexList.add(piList);
+            }
+            List<List<Pi>> sourceVertexList = graph.edgeSet().stream().map(graph::getEdgeSource).collect(Collectors.toList());
+            targetVertexList.removeAll(sourceVertexList);
+
+            // TODO 優先度判断
+            targetVertexList.forEach(targetVertex -> {
+                if (targetVertex.size() == 0) {
+                    solved.set(true);
+                    // TODO 解答出力
+                    logger.info("solved");
+                }
+                updateNeighborhood(targetVertex);
+
+                Map<PiType, List<Pi>> piMap = getRemovablePiMap(targetVertex);
+
+                List<Pi> removedFourPies = piMap.entrySet().stream()
+                        .filter(e -> e.getValue().size() == 4)
+                        .flatMap(e -> e.getValue().stream())
+                        .collect(Collectors.toList());
+                if (removedFourPies.size() != 0) {
+                    addVertex(graph, targetVertex, removedFourPies);
+                } else {
+                    List<PiPair> piPairList = new ArrayList<>();
+                    for (Map.Entry<PiType, List<Pi>> entry : piMap.entrySet()) {
+                        if (entry.getValue().size() == 2) {
+                            piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+                        } else if (entry.getValue().size() == 3) {
+                            piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+                            piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(2)));
+                            piPairList.add(new PiPair(entry.getValue().get(1), entry.getValue().get(2)));
+                        }
+                    }
+                    piPairList.stream().filter(p -> !isCheckmate(targetVertex, p)).forEach(pair -> addVertex(graph, targetVertex, pair.toList())
+                    );
+                }
+            });
+            floor++;
+            logger.info("floor:vertex:" + floor + ":" + graph.vertexSet().size());
+        }
+
+        return solved.get();
+    }
+
+    /**
+     * 取り除き可能な牌種とそのリストを取得する
+     *
+     * @param piList 局面配列
+     * @return 取り除き可能な牌種とそのリスト
+     */
+    private Map<PiType, List<Pi>> getRemovablePiMap(List<Pi> piList) {
+        Map<PiType, List<Pi>> piMap = new HashMap<>();
+        piList.stream().filter(Pi::isRemoval).forEach(pi -> {
+            if (!piMap.containsKey(pi.getPiType())) {
+                piMap.put(pi.getPiType(), new ArrayList<>());
+            }
+            piMap.get(pi.getPiType()).add(pi);
+        });
+        return piMap;
+    }
+
+    private void addVertex(Graph<List<Pi>, DefaultEdge> graph, List<Pi> targetVertex, List<Pi> removalPiList) {
+        List<Pi> nextVertex = new ArrayList<>(targetVertex);
+        nextVertex.removeAll(removalPiList);
+        if (!graph.containsVertex(nextVertex)) {
+            graph.addVertex(nextVertex);
+        }
+        graph.addEdge(targetVertex, nextVertex);
+    }
 }

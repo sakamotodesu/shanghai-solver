@@ -25,7 +25,7 @@ import java.util.List;
         "onMiddleRight",
         "onLowerRight"})
 public class PlacedPi implements Pi {
-
+    // TODO Pi interfaceいらない説
 
     private PiType piType;
     // レイアウト上の座標
