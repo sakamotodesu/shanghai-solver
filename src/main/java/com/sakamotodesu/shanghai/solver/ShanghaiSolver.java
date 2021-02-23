@@ -223,7 +223,7 @@ public final class ShanghaiSolver {
     public void updateDeadlockFloor(List<Pi> piList) {
         for (Pi pi : piList) {
             ShanghaiDAG floorDag = ShanghaiDAG.getFloorDAG(pi);
-            floorDag.search().forEach(pi::linkFloorDeadlockPi);
+            floorDag.searchRootPi().forEach(pi::linkFloorDeadlockPi);
         }
     }
 
@@ -238,7 +238,7 @@ public final class ShanghaiSolver {
     public void updateDeadlockRightSide(List<Pi> piList) {
         for (Pi rootPi : piList) {
             ShanghaiDAG rightSideDag = ShanghaiDAG.getRightSideDAG(rootPi);
-            List<Pi> samePiList = rightSideDag.search();
+            List<Pi> samePiList = rightSideDag.searchRootPi();
             for (Pi samePiAsRoot : samePiList) {
                 ShanghaiDAG partialDag = rightSideDag.partialDag(samePiAsRoot);
                 List<Pi> sandPiList = partialDag.getVertexList().stream().filter(qi -> qi.getPiType() != samePiAsRoot.getPiType()).collect(Collectors.toList());
@@ -246,6 +246,7 @@ public final class ShanghaiSolver {
                     ShanghaiDAG samePiRightSideDag = ShanghaiDAG.getRightSideDAG(samePiAsRoot);
                     List<Pi> samePiAsSandList = samePiRightSideDag.getVertexList().stream().filter(ri -> ri.getPiType() == sandPi.getPiType()).collect(Collectors.toList());
                     for (Pi samePiAsSand : samePiAsSandList) {
+                        // TODO これでロック情報網羅してるか怪しいなあ
                         rootPi.linkSideDeadlockPi(samePiAsRoot);
                         rootPi.linkSideDeadlockPi(sandPi);
                         sandPi.linkSideDeadlockPi(samePiAsSand);
@@ -261,11 +262,58 @@ public final class ShanghaiSolver {
     /**
      * 左右の詰みパターン検索
      * 1122のパターン
-     *
+     * TODO テストかく
      * @param piList 問題
      */
     public void updateDeadlockRightSideContinuous(List<Pi> piList) {
+        for (Pi rootPi : piList) {
+            // 11を探す
+            ShanghaiDAG rightSideDag = ShanghaiDAG.getRightSideDAG(rootPi);
+            List<Pi> samePiList = rightSideDag.searchRootPi();
+            for (Pi samePiAsRoot : samePiList) {
+                // 22を探す
+                List<Pi> samePiNextPiRootList = rightSideDag.getEdgeList().stream()
+                        .filter(pair -> pair.getFrom().getPiType() == samePiAsRoot.getPiType())
+                        .map(PiPair::getTo).collect(Collectors.toList());
+                for (Pi nextRoot : samePiNextPiRootList) {
+                    ShanghaiDAG nextRootDag = ShanghaiDAG.getRightSideDAG(nextRoot);
+                    Map<PiType, List<Pi>> piMap = new HashMap<>();
+                    nextRootDag.getVertexList().forEach(pi -> {
+                        if (!piMap.containsKey(pi.getPiType())) {
+                            piMap.put(pi.getPiType(), new ArrayList<>());
+                        }
+                        piMap.get(pi.getPiType()).add(pi);
+                    });
+                    // 4個並んでたらそもそも解答不能な問題のはず
+                    for (Map.Entry<PiType, List<Pi>> entry : piMap.entrySet()) {
+                        if (entry.getValue().size() == 2) {
+                            Pi pi = entry.getValue().get(0);
+                            ShanghaiDAG dag = ShanghaiDAG.getRightSideDAG(pi);
+                            List<Pi> pairList = dag.searchRootPi();
+                            if (pairList.size() != 0) {
+                                // みつかった
+                                rootPi.linkSideDeadlockPi(samePiAsRoot);
+                                rootPi.linkSideDeadlockPi(pi);
+                                pi.linkSideDeadlockPi(pairList.get(0));
+                                pi.linkSideDeadlockPi(samePiAsRoot);
+                            }
+                            Pi pi2 = entry.getValue().get(0);
+                            ShanghaiDAG dag2 = ShanghaiDAG.getRightSideDAG(pi2);
+                            List<Pi> pairList2 = dag2.searchRootPi();
+                            if (pairList2.size() != 0) {
+                                // みつかった
+                                rootPi.linkSideDeadlockPi(samePiAsRoot);
+                                rootPi.linkSideDeadlockPi(pi2);
+                                pi2.linkSideDeadlockPi(pairList2.get(0));
+                                pi2.linkSideDeadlockPi(samePiAsRoot);
+                            }
 
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
     public boolean solve(List<Pi> piList) {
@@ -426,6 +474,7 @@ public final class ShanghaiSolver {
         }
         // 残った2個が相互にdeadlockListに入ってたら詰み
         if (restPiList.get(0).getFloorDeadlockList().contains(restPiList.get(1)) && restPiList.get(1).getFloorDeadlockList().contains(restPiList.get(0))) {
+            logger.debug("checkmate.");
             return true;
         }
 
@@ -437,6 +486,7 @@ public final class ShanghaiSolver {
             for (Pi otherPi : otherLockPiList) {
                 // 2個しか残ってないなら詰み
                 if (piList.stream().filter(pi -> pi.getPiType() == otherPi.getPiType()).count() == 2) {
+                    logger.debug("checkmate.");
                     return true;
                 }
             }
@@ -537,7 +587,7 @@ public final class ShanghaiSolver {
     // 　　　　新しい頂点一覧ができる
     // 　　　　　すでに分岐済みの局面に帰着したらそこで終わり
     // 　　　　　　未探索(未分岐)の頂点かどうか判定する
-    // 　　　　　　　jgraphでいけるかなあ。同一頂点の判定、出ていく辺を持っているかの判定とか？
+    // 　　　　　　　jGraphでいけるかなあ。同一頂点の判定、出ていく辺を持っているかの判定とか？
 
     public boolean solverByGraph(List<Pi> piList) {
 
@@ -633,7 +683,7 @@ public final class ShanghaiSolver {
         ShortestPathAlgorithm.SingleSourcePaths<List<Pi>, DefaultEdge> iPaths = dijkstraAlg.getPaths(startVertex);
         List<List<Pi>> a = iPaths.getPath(endVertex).getVertexList();
         List<Pi> preList = startVertex;
-        for(List < Pi > currentList :a){
+        for (List<Pi> currentList : a) {
             if (!preList.equals(currentList)) {
                 List<Pi> answer = new ArrayList<>(preList);
                 answer.removeAll(currentList);

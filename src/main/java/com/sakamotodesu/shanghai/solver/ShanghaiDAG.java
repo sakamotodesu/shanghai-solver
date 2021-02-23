@@ -168,7 +168,7 @@ public class ShanghaiDAG {
      *
      * @return 起点と同じだった牌。
      */
-    public List<Pi> search() {
+    public List<Pi> searchRootPi() {
         List<Pi> searched = vertexList.stream().filter(pi -> pi.getPiType() == startVertex.getPiType()).collect(Collectors.toList());
         searched.remove(startVertex);
         return searched;

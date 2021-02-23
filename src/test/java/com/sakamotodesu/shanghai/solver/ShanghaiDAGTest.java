@@ -80,7 +80,7 @@ public class ShanghaiDAGTest {
         ShanghaiSolver solver = new ShanghaiSolver();
         solver.updateNeighborhood(deadlockFloor);
         ShanghaiDAG dag = ShanghaiDAG.getFloorDAG(deadlockFloor.get(0));
-        assertThat(dag.search().size(), is(3));
+        assertThat(dag.searchRootPi().size(), is(3));
 
     }
 }

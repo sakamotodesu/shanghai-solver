@@ -23,7 +23,9 @@ import java.util.List;
         "onLower",
         "onUpperRight",
         "onMiddleRight",
-        "onLowerRight"})
+        "onLowerRight",
+        "floorDeadlockList",
+        "sideDeadlockList"})
 public class PlacedPi implements Pi {
     // TODO Pi interfaceいらない説
 
