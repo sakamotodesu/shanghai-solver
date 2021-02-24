@@ -258,11 +258,14 @@ public final class ShanghaiSolver {
         }
     }
 
+    // TODO 並列化できないかなあ
+    // 　　　solveByGraph単位でできそう。floorの処理を別スレッドにして、各スレッドはGraphの最新状態からスタートする
 
     /**
      * 左右の詰みパターン検索
      * 1122のパターン
      * TODO テストかく
+     *
      * @param piList 問題
      */
     public void updateDeadlockRightSideContinuous(List<Pi> piList) {
@@ -671,9 +674,7 @@ public final class ShanghaiSolver {
     private void addVertex(Graph<List<Pi>, DefaultEdge> graph, List<Pi> targetVertex, List<Pi> removalPiList) {
         List<Pi> nextVertex = new ArrayList<>(targetVertex);
         nextVertex.removeAll(removalPiList);
-        if (!graph.containsVertex(nextVertex)) {
-            graph.addVertex(nextVertex);
-        }
+        graph.addVertex(nextVertex);
         graph.addEdge(targetVertex, nextVertex);
     }
 
