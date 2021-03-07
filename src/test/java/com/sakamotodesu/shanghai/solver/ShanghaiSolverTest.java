@@ -210,4 +210,11 @@ public class ShanghaiSolverTest {
         solver.validate(normal);
         assertThat(solver.solverByGraph(normal), is(true));
     }
+
+    @Test
+    public void solvedByPointTest() throws InvalidLayoutException {
+        ShanghaiSolver solver = new ShanghaiSolver();
+        solver.validate(normal);
+        assertThat(solver.solveByPoint(normal, 3), is(true));
+    }
 }

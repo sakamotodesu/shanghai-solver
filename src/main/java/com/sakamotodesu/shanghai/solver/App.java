@@ -8,7 +8,8 @@ public class App {
         ShanghaiSolver solver = new ShanghaiSolver();
         //solver.solve(StageData.getNormal());
         //solver.solveByBreadthStart(StageData.getDendo());
-        solver.solverByGraph(StageData.getDendo());
+        //solver.solverByGraph(StageData.getDendo());
+        solver.solveByPoint(StageData.getDendo(), 1);
     }
 
     public String getGreeting() {

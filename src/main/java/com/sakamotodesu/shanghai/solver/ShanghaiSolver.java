@@ -210,6 +210,36 @@ public final class ShanghaiSolver {
     // 　　　　詰みパターンを優先的に潰したり、詰みパターンの牌に近くルートを優先的に試したりしたい
     // 　　　　　深さ優先で掘り下げ、情報集まったら手前から再分岐する？
     // 　　　　　　実際上海をプレイする時もそんな感じ。詰みを見つけたら解消を優先し、詰みにくいようにプレイし、
+    // 　　　　局面、その次の手に評価点をつける
+    // 　　　　　評価点の高い局面、次の手を選ぶ
+    // 　　　　　　再帰敵に分岐パターンが残っている局面をリストアップし、再度評価点の高いてを選ぶ
+    // 　　　　　　局面リストに対して網羅的に分岐はしない
+    // 　　　　　　　局面のリストアップ方法変えないと。いまはそこから先の辺がない局面としてるけど今後は未分岐ありなし、評価点を知る必要がある
+    // 　　　　　　　　局面クラスに配列、評価点、を残すのはいいけど未分岐の情報はグラフが壊れるなあ
+    // 　　　　　　　　　未分岐の辺があることをどうやって知る？未分岐未探索ルートリストは辺の集合として別管理する？
+    // 　　　　　　　　　　単に分岐先を未探索局面として管理しておけばよさそう
+    // 　　　　　　　　　　　でも分岐元とセットで管理しないとダメか。辺が作れない。
+    // 　　　　　詰みパターンに絡んでる牌は点数を加点する？その牌に絡んでる牌も点数をちょっと加点し選ばれやすくする？
+    // 　　　　　　詰みパターンの厳密な検知は残しておいて、詰み牌からのデッドロックDAGを生成してその中にあるものをちょっと加点したりとか
+    // 　　　　　　　詰みがなくなった局面は最優先したい。とけちゃうはずだし。局面ごとに詰みパターンが何個あるかで優先度変わる？
+    //
+    // 　　　　　単に牌が少ない局面も優先する
+    // 　　　　　　でもそうすると単なる深さ優先探索になるよね
+    // 　　　　　　　unsolvedになったときは次に選ぶ局面に対して特別なロジックを選ぶ
+    // 　　　　　　　　unsolvedにぶち当たるまでは牌が少ない&評価点高いベースで潜って、ぶち当たったら牌の少なさは無視して評価点だけで再度選ぶ・・・とかできるかなあ
+    // 　　　　　　　　　ぶち当たったら再度評価点を再計算できると良いんだけど難しいな。あーでもPiは共通のオブジェクト使ってるからできちゃう？
+    // 　　　　　局面の牌の数、評価点、詰みパターンの有無で優先度が変わる？
+    // 　　　　　　早く解くには、詰みパターンを積極的に減らして、ゼロになったらひたすら牌を取る
+    // 　　探索戦略2
+    // 　　　詰みになったら残った牌を加点する？
+    // 　　　　詰みになったときに、removalなのに1個しかない牌があれば加点する
+    // 　　　　　実際の思考回路に近いな
+    // 　　　
+
+    // なんでパズルっぽく解けないんだろうな
+    // 　手を確定する、みたいな手段がないよね
+    // 　　これを取るためにはこれを取らなきゃ、とかも双方向になっちゃう
+
 
     public void updateDeadlock(List<Pi> piList) {
         updateDeadlockFloor(piList);
@@ -693,5 +723,142 @@ public final class ShanghaiSolver {
             }
         }
 
+    }
+
+    public boolean solveByPoint(List<Pi> piList, int breadth) {
+
+        Graph<List<Pi>, ShanghaiEdge> graph = new DirectedAcyclicGraph<>(ShanghaiEdge.class);
+        // 出発頂点、到達頂点、取る牌のペア
+        List<ShanghaiEdge> edgeList = new ArrayList<>();
+        Map<PiType, Integer> pointMap = new HashMap<>();
+        AtomicBoolean solved = new AtomicBoolean(false);
+        int floor = 0;
+        graph.addVertex(piList);
+        List<List<Pi>> targetVertexList;
+        Comparator<ShanghaiEdge> edgeComparator = Comparator.comparingInt(o -> o.getPoint(pointMap));
+
+        while (!solved.get()) {
+
+            // 評価点の高いedgeが第一優先で、評価点が同じなら牌の数が少ないVertexが優先
+            if (edgeList.stream().map(e -> e.getPoint(pointMap)).distinct().count() == 1) {
+                // 評価点が全部同じなのでVertexの牌の数が少ないやつ優先
+                targetVertexList = edgeList.stream()
+                        .map(graph::getEdgeTarget)
+                        .sorted(Comparator.comparingInt(List::size))
+                        .collect(Collectors.toList());
+                if (targetVertexList.size() > breadth) {
+                    targetVertexList = targetVertexList.subList(0, breadth);
+                }
+                // edgeListから取り除きたい
+                List<ShanghaiEdge> removalEdge = new ArrayList<>();
+                for (ShanghaiEdge edge : edgeList) {
+                    if (targetVertexList.contains(graph.getEdgeTarget(edge))) {
+                        removalEdge.add(edge);
+                    }
+                }
+                edgeList.removeAll(removalEdge);
+            } else {
+                // 評価点優先
+                List<ShanghaiEdge> priorityEdge = edgeList.stream().sorted(edgeComparator.reversed()).collect(Collectors.toList());
+                if (edgeList.size() > breadth) {
+                    priorityEdge = priorityEdge.subList(0, breadth);
+                }
+                targetVertexList = priorityEdge.stream().map(graph::getEdgeTarget).collect(Collectors.toList());
+                edgeList.removeAll(priorityEdge);
+            }
+            if (edgeList.isEmpty() && targetVertexList.isEmpty()) {
+                targetVertexList.add(piList);
+            }
+
+            for (List<Pi> targetVertex : targetVertexList) {
+                logger.debug(String.valueOf(targetVertex.size()));
+                if (targetVertex.size() == 0) {
+                    solved.set(true);
+                    logger.info("solved");
+                    this.printShanghaiAnswer(graph, piList, targetVertex);
+                }
+                updateNeighborhood(targetVertex);
+
+                Map<PiType, List<Pi>> piMap = getRemovablePiMap(targetVertex);
+
+                List<Pi> removedFourPies = piMap.entrySet().stream()
+                        .filter(e -> e.getValue().size() == 4)
+                        .flatMap(e -> e.getValue().stream())
+                        .collect(Collectors.toList());
+                if (removedFourPies.size() != 0) {
+                    addShanghaiVertex(edgeList, graph, targetVertex, removedFourPies);
+                } else {
+                    List<PiPair> piPairList = new ArrayList<>();
+                    for (Map.Entry<PiType, List<Pi>> entry : piMap.entrySet()) {
+                        if (entry.getValue().size() == 2) {
+                            piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+                        } else if (entry.getValue().size() == 3) {
+                            piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(1)));
+                            piPairList.add(new PiPair(entry.getValue().get(0), entry.getValue().get(2)));
+                            piPairList.add(new PiPair(entry.getValue().get(1), entry.getValue().get(2)));
+                        }
+                    }
+                    if (piPairList.isEmpty()) {
+                        // 取れるペアがなかったから詰んでる。その牌種全部の評価点をプラスする。
+                        for (Map.Entry<PiType, List<Pi>> entry : piMap.entrySet()) {
+                            if (entry.getValue().size() == 1) {
+                                piList.stream().map(Pi::getPiType)
+                                        .filter(piType -> piType == entry.getKey())
+                                        .forEach(type -> {
+                                            if (!pointMap.containsKey(type)) {
+                                                pointMap.put(type, 0);
+                                            }
+                                            Integer point = pointMap.get(type);
+                                            point++;
+                                            pointMap.put(type, point);
+                                        });
+                                logger.info("add point:" + pointMap);
+                            }
+                        }
+                    } else {
+                        List<PiPair> checkedPair = piPairList.stream().filter(p -> !isCheckmate(targetVertex, p)).collect(Collectors.toList());
+                        for (PiPair pair : checkedPair) {
+                            addShanghaiVertex(edgeList, graph, targetVertex, pair.toList());
+                        }
+                    }
+                }
+            }
+            floor++;
+            if (floor % 1000 == 0) {
+                logger.info("floor:vertex:" + floor + ":" + graph.vertexSet().size());
+            }
+        }
+        return solved.get();
+    }
+
+    private void addShanghaiVertex(List<ShanghaiEdge> edgeList, Graph<List<Pi>, ShanghaiEdge> graph, List<Pi> targetVertex, List<Pi> removalPiList) {
+        List<Pi> nextVertex = new ArrayList<>(targetVertex);
+        nextVertex.removeAll(removalPiList);
+        graph.addVertex(nextVertex);
+        ShanghaiEdge edge = new ShanghaiEdge(removalPiList);
+        boolean ret = graph.addEdge(targetVertex, nextVertex, edge);
+        if (ret) {
+            // なんかedgeが期待する動作をしていないな。edgeListが機能してない？上書きされてtarget/sourceを見失う？ShanghaiEdgeがkeyになってなさそう
+            edgeList.add(edge);
+        } else {
+            // なぜかedgeが重複するケースがあるらしい
+            logger.debug("edge already added.");
+        }
+    }
+
+    private void printShanghaiAnswer(Graph<List<Pi>, ShanghaiEdge> graph, List<Pi> startVertex, List<Pi> endVertex) {
+        DijkstraShortestPath<List<Pi>, ShanghaiEdge> dijkstraAlg =
+                new DijkstraShortestPath<>(graph);
+        ShortestPathAlgorithm.SingleSourcePaths<List<Pi>, ShanghaiEdge> iPaths = dijkstraAlg.getPaths(startVertex);
+        List<List<Pi>> a = iPaths.getPath(endVertex).getVertexList();
+        List<Pi> preList = startVertex;
+        for (List<Pi> currentList : a) {
+            if (!preList.equals(currentList)) {
+                List<Pi> answer = new ArrayList<>(preList);
+                answer.removeAll(currentList);
+                logger.info(answer.toString());
+                preList = currentList;
+            }
+        }
     }
 }
