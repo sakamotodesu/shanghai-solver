@@ -177,7 +177,7 @@ public class ShanghaiDAG {
     /**
      * DAG刈り込み
      *
-     * @param toPi   DAG終点
+     * @param toPi DAG終点
      * @return 起点から終点に入る辺を持つ頂点だけのDAG
      */
     public ShanghaiDAG partialDag(Pi toPi) {

@@ -1,7 +1,6 @@
 package com.sakamotodesu.shanghai.solver;
 
 import com.sakamotodesu.shanghai.solver.pi.Pi;
-import com.sakamotodesu.shanghai.solver.pi.PlacedPi;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,28 +19,28 @@ public class ShanghaiDAGTest {
 
     @Before
     public void setUp() {
-        deadlockRightSide = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 6, 0, 0),
-                new PlacedPi(ryanMan, 5, 2, 0),
-                new PlacedPi(ryanMan, 7, 2, 0),
+        deadlockRightSide = new ArrayList<>(Arrays.asList(new Pi(eMan, 6, 0, 0),
+                new Pi(ryanMan, 5, 2, 0),
+                new Pi(ryanMan, 7, 2, 0),
 
-                new PlacedPi(eMan, 5, 4, 0),
-                new PlacedPi(eMan, 7, 4, 0),
+                new Pi(eMan, 5, 4, 0),
+                new Pi(eMan, 7, 4, 0),
 
-                new PlacedPi(eMan, 4, 6, 0),
-                new PlacedPi(sanWan, 6, 6, 0),
-                new PlacedPi(sanWan, 8, 6, 0),
+                new Pi(eMan, 4, 6, 0),
+                new Pi(sanWan, 6, 6, 0),
+                new Pi(sanWan, 8, 6, 0),
 
-                new PlacedPi(ryanMan, 3, 8, 0),
-                new PlacedPi(sanWan, 5, 8, 0),
-                new PlacedPi(ryanMan, 7, 8, 0),
-                new PlacedPi(sanWan, 9, 8, 0)));
+                new Pi(ryanMan, 3, 8, 0),
+                new Pi(sanWan, 5, 8, 0),
+                new Pi(ryanMan, 7, 8, 0),
+                new Pi(sanWan, 9, 8, 0)));
 
-        deadlockFloor = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 1, 0),
-                new PlacedPi(eMan, 0, 0, 1),
-                new PlacedPi(ryanMan, 0, 2, 1),
-                new PlacedPi(eMan, 0, 1, 2),
-                new PlacedPi(ryanMan, 0, 3, 2),
-                new PlacedPi(eMan, 0, 4, 3)));
+        deadlockFloor = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 1, 0),
+                new Pi(eMan, 0, 0, 1),
+                new Pi(ryanMan, 0, 2, 1),
+                new Pi(eMan, 0, 1, 2),
+                new Pi(ryanMan, 0, 3, 2),
+                new Pi(eMan, 0, 4, 3)));
     }
 
     @Test
@@ -75,6 +74,7 @@ public class ShanghaiDAGTest {
         assertThat(partialDag.getVertexList().size(), is(6));
         assertThat(partialDag.getEdgeList().size(), is(6));
     }
+
     @Test
     public void searchTest() {
         ShanghaiSolver solver = new ShanghaiSolver();

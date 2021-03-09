@@ -10,8 +10,8 @@ public class PlacedPiTest {
 
     @Test
     public void removal() {
-        Pi pi = new PlacedPi(eMan, 0, 0, 0);
-        Pi qi = new PlacedPi(eMan, 0, 2, 0);
+        Pi pi = new Pi(eMan, 0, 0, 0);
+        Pi qi = new Pi(eMan, 0, 2, 0);
         pi.setMiddleRight(qi);
         assertThat(pi.isRemoval(), is(true));
     }

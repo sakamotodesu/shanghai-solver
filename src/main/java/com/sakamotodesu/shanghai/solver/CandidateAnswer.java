@@ -15,9 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 public class CandidateAnswer {
     @Getter
-    private List<Pi> candidateAnswerList;
+    private final List<Pi> candidateAnswerList;
     @Getter
-    private List<Pi> analysysPiList;
+    private final List<Pi> analysysPiList;
 
     public CandidateAnswer(CandidateAnswer that) {
         this.candidateAnswerList = new ArrayList<>(that.getCandidateAnswerList());

@@ -47,7 +47,7 @@ public final class ShanghaiSolver {
 
         for (Pi pi : piList) {
             if (layout[pi.getK()][pi.getI()][pi.getJ()] != ' '
-                    || layout[pi.getK()][pi.getI() + 1][pi.getJ()] != ' '
+                    || layout[pi.getK()][pi.getI()][pi.getJ() + 1] != ' '
                     || layout[pi.getK()][pi.getI() + 1][pi.getJ()] != ' '
                     || layout[pi.getK()][pi.getI() + 1][pi.getJ() + 1] != ' ') {
                 throw new InvalidLayoutException("Pi location(i:j:k) mistake?" + pi.toString());
@@ -59,9 +59,6 @@ public final class ShanghaiSolver {
         }
     }
 
-    //TODO 毎回全部updateする必要ある？
-    // 1回removalと判定されたらそのあともremovalのままだよね
-    // removalがnot removalに戻ることはない
     public void updateNeighborhood(List<Pi> piList) {
         for (Pi pi : piList) {
             pi.init();
@@ -507,7 +504,7 @@ public final class ShanghaiSolver {
         }
         // 残った2個が相互にdeadlockListに入ってたら詰み
         if (restPiList.get(0).getFloorDeadlockList().contains(restPiList.get(1)) && restPiList.get(1).getFloorDeadlockList().contains(restPiList.get(0))) {
-            logger.debug("checkmate.");
+            logger.info("checkmate.");
             return true;
         }
 
@@ -519,7 +516,7 @@ public final class ShanghaiSolver {
             for (Pi otherPi : otherLockPiList) {
                 // 2個しか残ってないなら詰み
                 if (piList.stream().filter(pi -> pi.getPiType() == otherPi.getPiType()).count() == 2) {
-                    logger.debug("checkmate.");
+                    logger.info("checkmate.");
                     return true;
                 }
             }
@@ -638,7 +635,6 @@ public final class ShanghaiSolver {
             List<List<Pi>> sourceVertexList = graph.edgeSet().stream().map(graph::getEdgeSource).collect(Collectors.toList());
             targetVertexList.removeAll(sourceVertexList);
 
-            // TODO 優先度判断
             targetVertexList.forEach(targetVertex -> {
                 if (targetVertex.size() == 0) {
                     solved.set(true);
@@ -725,8 +721,14 @@ public final class ShanghaiSolver {
 
     }
 
+    /**
+     * 評価点方式で解く
+     * 深さ優先で探索し、詰んだらその時取れなかった牌の評価を加点し、その牌を優先的に取るルートから再探索する
+     * @param piList 問題
+     * @param breadth 探索幅
+     * @return true:解けた
+     */
     public boolean solveByPoint(List<Pi> piList, int breadth) {
-
         Graph<List<Pi>, ShanghaiEdge> graph = new DirectedAcyclicGraph<>(ShanghaiEdge.class);
         // 出発頂点、到達頂点、取る牌のペア
         List<ShanghaiEdge> edgeList = new ArrayList<>();
@@ -812,25 +814,29 @@ public final class ShanghaiSolver {
                                             point++;
                                             pointMap.put(type, point);
                                         });
-                                logger.info("add point:" + pointMap);
+                                logger.debug("add point:" + pointMap);
                             }
                         }
                     } else {
-                        List<PiPair> checkedPair = piPairList.stream().filter(p -> !isCheckmate(targetVertex, p)).collect(Collectors.toList());
-                        for (PiPair pair : checkedPair) {
-                            addShanghaiVertex(edgeList, graph, targetVertex, pair.toList());
-                        }
+                        piPairList.forEach(pair -> addShanghaiVertex(edgeList, graph, targetVertex, pair.toList()));
                     }
                 }
             }
             floor++;
             if (floor % 1000 == 0) {
-                logger.info("floor:vertex:" + floor + ":" + graph.vertexSet().size());
+                logger.debug("floor:vertex:" + floor + ":" + graph.vertexSet().size());
             }
         }
         return solved.get();
     }
 
+    /**
+     * 探索途中の頂点の追加
+     * @param edgeList 探索候補の辺リスト
+     * @param graph 探索グラフ
+     * @param targetVertex 辺の出発点
+     * @param removalPiList 辺の到着点
+     */
     private void addShanghaiVertex(List<ShanghaiEdge> edgeList, Graph<List<Pi>, ShanghaiEdge> graph, List<Pi> targetVertex, List<Pi> removalPiList) {
         List<Pi> nextVertex = new ArrayList<>(targetVertex);
         nextVertex.removeAll(removalPiList);
@@ -838,14 +844,20 @@ public final class ShanghaiSolver {
         ShanghaiEdge edge = new ShanghaiEdge(removalPiList);
         boolean ret = graph.addEdge(targetVertex, nextVertex, edge);
         if (ret) {
-            // なんかedgeが期待する動作をしていないな。edgeListが機能してない？上書きされてtarget/sourceを見失う？ShanghaiEdgeがkeyになってなさそう
             edgeList.add(edge);
         } else {
-            // なぜかedgeが重複するケースがあるらしい
+            // todo なぜかedgeが重複するケースがあるらしい
             logger.debug("edge already added.");
         }
     }
 
+    /**
+     * 解答の表示
+     * ダイクストラ法で初期状態から解答状態までの道を探索
+     * @param graph 探索グラフ
+     * @param startVertex 問題の初期状態
+     * @param endVertex 問題が解けた状態
+     */
     private void printShanghaiAnswer(Graph<List<Pi>, ShanghaiEdge> graph, List<Pi> startVertex, List<Pi> endVertex) {
         DijkstraShortestPath<List<Pi>, ShanghaiEdge> dijkstraAlg =
                 new DijkstraShortestPath<>(graph);

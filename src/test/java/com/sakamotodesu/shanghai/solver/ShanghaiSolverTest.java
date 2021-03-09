@@ -1,7 +1,6 @@
 package com.sakamotodesu.shanghai.solver;
 
 import com.sakamotodesu.shanghai.solver.pi.Pi;
-import com.sakamotodesu.shanghai.solver.pi.PlacedPi;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,70 +31,70 @@ public class ShanghaiSolverTest {
 
     @Before
     public void setup() {
-        twoPiesMiddleRight = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 0, 2, 0)));
-        twoPiesLowerRight = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 1, 2, 0)));
-        twoPiesInvalid = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 1, 1, 0)));
-        twoPiesOnPies = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 0, 0, 1)));
-        fourPiesAllRemoval = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 0, 2, 0),
-                new PlacedPi(ryanMan, 2, 0, 0),
-                new PlacedPi(ryanMan, 2, 2, 0)));
-        fourPiesPartialRemoval = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(ryanMan, 0, 2, 0),
-                new PlacedPi(ryanMan, 0, 4, 0),
-                new PlacedPi(eMan, 0, 6, 0)));
-        fourPiesImpossible = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(ryanMan, 0, 2, 0),
-                new PlacedPi(eMan, 0, 4, 0),
-                new PlacedPi(ryanMan, 0, 6, 0)));
-        sixPiesOnlyOneWayPossible = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 0, 2, 0),
-                new PlacedPi(eMan, 2, 0, 0),
-                new PlacedPi(ryanMan, 2, 2, 0),
-                new PlacedPi(eMan, 2, 4, 0),
-                new PlacedPi(ryanMan, 2, 6, 0)));
-        twoFloor = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 0, 2, 0),
-                new PlacedPi(ryanMan, 0, 0, 1),
-                new PlacedPi(ryanMan, 0, 2, 1)));
+        twoPiesMiddleRight = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 0, 2, 0)));
+        twoPiesLowerRight = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 1, 2, 0)));
+        twoPiesInvalid = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 1, 1, 0)));
+        twoPiesOnPies = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 0, 0, 1)));
+        fourPiesAllRemoval = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 0, 2, 0),
+                new Pi(ryanMan, 2, 0, 0),
+                new Pi(ryanMan, 2, 2, 0)));
+        fourPiesPartialRemoval = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(ryanMan, 0, 2, 0),
+                new Pi(ryanMan, 0, 4, 0),
+                new Pi(eMan, 0, 6, 0)));
+        fourPiesImpossible = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(ryanMan, 0, 2, 0),
+                new Pi(eMan, 0, 4, 0),
+                new Pi(ryanMan, 0, 6, 0)));
+        sixPiesOnlyOneWayPossible = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 0, 2, 0),
+                new Pi(eMan, 2, 0, 0),
+                new Pi(ryanMan, 2, 2, 0),
+                new Pi(eMan, 2, 4, 0),
+                new Pi(ryanMan, 2, 6, 0)));
+        twoFloor = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 0, 2, 0),
+                new Pi(ryanMan, 0, 0, 1),
+                new Pi(ryanMan, 0, 2, 1)));
         normal = new ArrayList<>(StageData.getNormal());
-        deadlockFloorCheckmate = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 0, 2, 0),
-                new PlacedPi(ryanMan, 2, 0, 0),
-                new PlacedPi(ryanMan, 2, 2, 0),
+        deadlockFloorCheckmate = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 0, 2, 0),
+                new Pi(ryanMan, 2, 0, 0),
+                new Pi(ryanMan, 2, 2, 0),
 
-                new PlacedPi(eMan, 0, 6, 0),
-                new PlacedPi(ryanMan, 1, 5, 1),
-                new PlacedPi(ryanMan, 1, 7, 1),
-                new PlacedPi(eMan, 2, 4, 2)));
-        deadlockRightSideCheckmate = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
-                new PlacedPi(eMan, 0, 2, 0),
-                new PlacedPi(ryanMan, 2, 0, 0),
-                new PlacedPi(ryanMan, 2, 2, 0),
+                new Pi(eMan, 0, 6, 0),
+                new Pi(ryanMan, 1, 5, 1),
+                new Pi(ryanMan, 1, 7, 1),
+                new Pi(eMan, 2, 4, 2)));
+        deadlockRightSideCheckmate = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
+                new Pi(eMan, 0, 2, 0),
+                new Pi(ryanMan, 2, 0, 0),
+                new Pi(ryanMan, 2, 2, 0),
 
-                new PlacedPi(eMan, 0, 6, 0),
-                new PlacedPi(ryanMan, 0, 8, 0),
-                new PlacedPi(eMan, 0, 10, 0),
-                new PlacedPi(ryanMan, 0, 12, 0)));
+                new Pi(eMan, 0, 6, 0),
+                new Pi(ryanMan, 0, 8, 0),
+                new Pi(eMan, 0, 10, 0),
+                new Pi(ryanMan, 0, 12, 0)));
 
-        deadlockRightSideThreePiesCheckmate = new ArrayList<>(Arrays.asList(new PlacedPi(eMan, 0, 0, 0),
+        deadlockRightSideThreePiesCheckmate = new ArrayList<>(Arrays.asList(new Pi(eMan, 0, 0, 0),
 
-                new PlacedPi(ryanMan, 0, 4, 0),
-                new PlacedPi(ryanMan, 0, 6, 0),
-                new PlacedPi(sanWan, 0, 10, 0),
-                new PlacedPi(sanWan, 0, 12, 0),
+                new Pi(ryanMan, 0, 4, 0),
+                new Pi(ryanMan, 0, 6, 0),
+                new Pi(sanWan, 0, 10, 0),
+                new Pi(sanWan, 0, 12, 0),
 
-                new PlacedPi(eMan, 2, 0, 0),
-                new PlacedPi(ryanMan, 2, 2, 0),
-                new PlacedPi(sanWan, 2, 4, 0),
-                new PlacedPi(eMan, 2, 6, 0),
-                new PlacedPi(ryanMan, 2, 8, 0),
-                new PlacedPi(sanWan, 2, 10, 0),
-                new PlacedPi(eMan, 2, 12, 0)));
+                new Pi(eMan, 2, 0, 0),
+                new Pi(ryanMan, 2, 2, 0),
+                new Pi(sanWan, 2, 4, 0),
+                new Pi(eMan, 2, 6, 0),
+                new Pi(ryanMan, 2, 8, 0),
+                new Pi(sanWan, 2, 10, 0),
+                new Pi(eMan, 2, 12, 0)));
 
     }
 
