@@ -10,7 +10,7 @@ public class App {
         //solver.solveByBreadthStart(StageData.getDendo());
         //solver.solverByGraph(StageData.getDendo());
         solver.validate(StageData.getDendo_ryota());
-        solver.solveByPoint(StageData.getDendo(), 1);
+        solver.solveByPoint(StageData.getDendo_ryota(), 1);
     }
 
     public String getGreeting() {
