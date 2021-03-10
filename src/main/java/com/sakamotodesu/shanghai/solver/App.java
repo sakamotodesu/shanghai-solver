@@ -4,11 +4,12 @@
 package com.sakamotodesu.shanghai.solver;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidLayoutException {
         ShanghaiSolver solver = new ShanghaiSolver();
         //solver.solve(StageData.getNormal());
         //solver.solveByBreadthStart(StageData.getDendo());
         //solver.solverByGraph(StageData.getDendo());
+        solver.validate(StageData.getDendo_ryota());
         solver.solveByPoint(StageData.getDendo(), 1);
     }
 

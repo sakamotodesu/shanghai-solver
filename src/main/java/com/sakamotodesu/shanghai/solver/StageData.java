@@ -215,4 +215,144 @@ public class StageData {
             new Pi(suSou, 8, 6, 3),
             new Pi(roWan, 8, 14, 3),
             new Pi(suSou, 8, 18, 3)));
+
+    @Getter
+    public static List<Pi> dendo_ryota = new ArrayList<>(Arrays.asList(new Pi(roSou, 0, 10, 0),
+
+            new Pi(suPin, 1, 6, 0),
+            new Pi(roSou, 1, 8, 0),
+            new Pi(suSou, 1, 12, 0),
+            new Pi(roWan, 1, 14, 0),
+
+            new Pi(suPin, 2, 4, 0),
+            new Pi(sanSou, 2, 10, 0),
+            new Pi(perPin, 2, 16, 0),
+
+            new Pi(ryanPin, 3, 2, 0),
+            new Pi(uSou, 3, 6, 0),
+            new Pi(uWan, 3, 8, 0),
+            new Pi(uWan, 3, 12, 0),
+            new Pi(roWan, 3, 14, 0),
+            new Pi(ryanPin, 3, 18, 0),
+
+            new Pi(hatsu, 4, 4, 0),
+            new Pi(sanSou, 4, 10, 0),
+            new Pi(uSou, 4, 16, 0),
+
+            new Pi(suPin, 5, 2, 0),
+            new Pi(chun, 5, 6, 0),
+            new Pi(chun, 5, 8, 0),
+            new Pi(hatsu, 5, 12, 0),
+            new Pi(ryanPin, 5, 14, 0),
+            new Pi(ryanSou, 5, 18, 0),
+
+            new Pi(hatsu, 6, 4, 0),
+            new Pi(chiWan, 6, 10, 0),
+            new Pi(ryanSou, 6, 16, 0),
+
+            new Pi(hatsu, 7, 2, 0),
+            new Pi(uSou, 7, 6, 0),
+            new Pi(suSou, 7, 8, 0),
+            new Pi(season, 7, 12, 0),
+            new Pi(chun, 7, 14, 0),
+            new Pi(ryu, 7, 18, 0),
+
+            new Pi(roSou, 8, 0, 0),
+            new Pi(chiSou, 8, 10, 0),
+            new Pi(sanWan, 8, 20, 0),
+
+            new Pi(ryu, 10, 10, 0),
+
+            new Pi(suWan, 11, 8, 0),
+            new Pi(nan, 11, 12, 0),
+
+            new Pi(sha, 12, 4, 0),
+            new Pi(suPin, 12, 6, 0),
+            new Pi(roPin, 12, 10, 0),
+            new Pi(quSou, 12, 14, 0),
+            new Pi(ryanPin, 12, 16, 0),
+
+            new Pi(chun, 0, 10, 1),
+
+            new Pi(sanSou, 1, 6, 1),
+            new Pi(roWan, 1, 8, 1),
+            new Pi(chiWan, 1, 12, 1),
+            new Pi(uWan, 1, 14, 1),
+
+            new Pi(suSou, 2, 4, 1),
+            new Pi(suWan, 2, 10, 1),
+            new Pi(perSou, 2, 16, 1),
+
+            new Pi(sanWan, 3, 2, 1),
+            new Pi(roSou, 3, 6, 1),
+            new Pi(suWan, 3, 8, 1),
+            new Pi(sanWan, 3, 12, 1),
+            new Pi(sha, 3, 14, 1),
+            new Pi(sha, 3, 18, 1),
+
+            new Pi(nan, 4, 4, 1),
+            new Pi(sanSou, 4, 10, 1),
+            new Pi(chiWan, 4, 16, 1),
+
+            new Pi(roPin, 5, 2, 1),
+            new Pi(perSou, 5, 6, 1),
+            new Pi(roPin, 5, 8, 1),
+            new Pi(suSou, 5, 12, 1),
+            new Pi(suWan, 5, 14, 1),
+            new Pi(season, 5, 18, 1),
+
+            new Pi(ryanSou, 6, 4, 1),
+            new Pi(season, 6, 10, 1),
+            new Pi(perSou, 6, 16, 1),
+
+            new Pi(chiWan, 7, 2, 1),
+            new Pi(chiSou, 7, 6, 1),
+            new Pi(perPin, 7, 8, 1),
+            new Pi(roWan, 7, 12, 1),
+            new Pi(sanWan, 7, 14, 1),
+            new Pi(pe, 7, 18, 1),
+
+            new Pi(haku, 8, 0, 1),
+            new Pi(ryu, 8, 10, 1),
+            new Pi(uPin, 8, 20, 1),
+
+            new Pi(uSou, 10, 10, 1),
+
+            new Pi(roPin, 11, 8, 1),
+            new Pi(uWan, 11, 12, 1),
+
+            new Pi(quSou, 12, 4, 1),
+            new Pi(perPin, 12, 6, 1),
+            new Pi(chiSou, 12, 10, 1),
+            new Pi(ton, 12, 14, 1),
+            new Pi(sha, 12, 16, 1),
+
+            new Pi(ton, 1, 6, 2),
+            new Pi(ton, 1, 8, 2),
+            new Pi(quSou, 1, 10, 2),
+            new Pi(quSou, 1, 12, 2),
+            new Pi(perSou, 1, 14, 2),
+
+            new Pi(nan, 2, 4, 2),
+            new Pi(perPin, 2, 16, 2),
+
+            new Pi(haku, 3, 2, 2),
+            new Pi(ryanSou, 3, 7, 2),
+            new Pi(pe, 3, 13, 2),
+            new Pi(uPin, 3, 18, 2),
+
+            new Pi(uPin, 5, 2, 2),
+            new Pi(chiSou, 5, 7, 2),
+            new Pi(haku, 5, 13, 2),
+            new Pi(ton, 5, 18, 2),
+
+            new Pi(pe, 6, 4, 2),
+            new Pi(season, 6, 16, 2),
+
+            new Pi(nan, 7, 6, 2),
+            new Pi(haku, 7, 8, 2),
+            new Pi(ryu, 7, 12, 2),
+            new Pi(pe, 7, 14, 2),
+
+            new Pi(uPin, 8, 10, 2)));
 }
